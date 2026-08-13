@@ -1,5 +1,5 @@
 //#region src/module/constants.ts
-var e = "fvtt-wfrp-ratter", t = "WFRP Ratter Content";
+var e = "fvtt-wfrp-ratter", t = "Drowsy's WFRP4e Ratter Implementation";
 //#endregion
 //#region src/module/api/create-module-api.ts
 function n() {

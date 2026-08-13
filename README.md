@@ -1,4 +1,4 @@
-# WFRP Ratter Content
+# Drowsy's WFRP4e Ratter Implementation
 
 Foundry VTT content module implementing fan-created WFRP material from The Ratter magazine for the
 WFRP4e system.
