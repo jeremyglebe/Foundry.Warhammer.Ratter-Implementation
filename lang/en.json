@@ -1,7 +1,52 @@
 {
   "FVTT_WFRP_RATTER": {
+    "Mutations": {
+      "AddOccurrence": "Add Another Occurrence",
+      "AcceptFailure": "Accept Failure",
+      "AcceptSuccess": "Accept Success",
+      "ChaosSpawn": "{name} now has more {nature} mutations than their {bonus} and becomes a mindless Chaos Spawn.",
+      "Chosen": "{name} loses {loss} Corruption and is Chosen by {patron}. Future mutations use that patron's table.",
+      "ChosenOutcome": "Chosen of Chaos",
+      "ChosenUnassigned": "{name} loses {loss} Corruption and is Chosen by Chaos. No patron was selected; one must be chosen before the next mutation roll.",
+      "DarkDeal": "Take a Dark Deal",
+      "DarkDealUsed": "{name} takes a Dark Deal, gains 1 Corruption ({corruption}/{maximum}), and rerolls the Endurance Test.",
+      "Error": "The Mutant's Handbook mutation workflow could not finish: {message} Fix the issue, then change Corruption again to retry.",
+      "FortuneReroll": "Spend Fortune to Reroll",
+      "FortuneRerollUsed": "{name} spends 1 Fortune to reroll the Endurance Test and has {remaining} remaining.",
+      "FortuneSL": "Spend Fortune for +1 SL",
+      "FortuneSLUsed": "{name} spends 1 Fortune to add +1 SL to the Endurance Test and has {remaining} remaining.",
+      "FortuneUnavailable": "{name} no longer has a Fortune point available; choose another option.",
+      "Gained": "{name} loses {loss} Corruption and gains the {mutation} mutation.",
+      "KeepMutation": "Keep Mutation",
+      "PatronPrompt": "{name} is Chosen by Chaos. Choose the patron whose mutation table they will use from now on.",
+      "PatronRequired": "Choose a Chaos patron for {name} before rolling another mutation.",
+      "PatronRestriction": "{patron} restriction for {mutation}: {note}",
+      "PatronTitle": "Choose a Chaos Patron",
+      "PossessedRemoved": "Becoming Chosen removes {name}'s possessing daemon. Possessed is now excluded from mutation counts; update any manually applied effects.",
+      "RepeatPending": "{name} loses {loss} Corruption, but the repeated {mutation} result was left for the GM to resolve.",
+      "RepeatPrompt": "{name} already has {mutation}. Mutations repeat by default, but some individual descriptions limit or prohibit another occurrence. Add another copy?",
+      "RepeatTitle": "Review Repeated Mutation",
+      "ResolveManually": "Resolve Manually",
+      "ResiliencePrompt": "{name} rolled {mutation}. Spend 1 Resilience to avoid it? Corruption is still reduced.",
+      "ResilienceTitle": "Resist Mutation",
+      "Resisted": "{name} spends 1 Resilience and avoids {mutation}, but still loses {loss} Corruption.",
+      "SpeciesRequired": "Choose a Mutant's Handbook species profile for {name} to finish the mutation roll.",
+      "SpendResilience": "Spend 1 Resilience",
+      "TestResourcesPrompt": "{name} failed the Challenging Endurance Test. Use any normal post-roll resources now; accepting the failure starts the Mutant's Handbook mutation procedure.",
+      "TestResourcesSuccessPrompt": "{name} passed the Challenging Endurance Test. Accept the result, spend Fortune for +1 SL, or take a Dark Deal before the test is finalized.",
+      "TestResourcesTitle": "Resolve Corruption Test",
+      "UnknownSpecies": "unknown",
+      "UnknownSpeciesPrompt": "{name}'s species ({species}) is not one of the Mutant's Handbook profiles. Choose the profile to use for this roll.",
+      "UnknownSpeciesTitle": "Choose a Species Profile"
+    },
     "Preview": {
       "Title": "Drowsy's WFRP4e Ratter Implementation"
+    },
+    "Settings": {
+      "MutantsHandbook": {
+        "Hint": "Replaces WFRP4e's standard Dissolution of Body and Mind result with the Ratter #11 Mutant's Handbook procedure when a character exceeds their Corruption threshold.",
+        "Name": "Use The Mutant's Handbook mutation rules"
+      }
     }
   }
 }
