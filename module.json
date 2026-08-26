@@ -2,7 +2,7 @@
   "id": "fvtt-wfrp-ratter",
   "title": "Drowsy's WFRP4e Ratter Implementation",
   "description": "A Foundry VTT content module implementing fan-created WFRP material from The Ratter magazine for the WFRP4e system.",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "authors": [
     {
       "name": "jeremyglebe"
@@ -13,6 +13,18 @@
     "verified": "14"
   },
   "relationships": {
+    "requires": [
+      {
+        "id": "wfrp4e-core",
+        "type": "module"
+      }
+    ],
+    "recommends": [
+      {
+        "id": "wfrp4e-wom",
+        "type": "module"
+      }
+    ],
     "systems": [
       {
         "id": "wfrp4e",
@@ -49,6 +61,13 @@
       "system": "wfrp4e"
     },
     {
+      "name": "ratter-11-journals",
+      "label": "Ratter #11 Journals",
+      "path": "packs/ratter-11-journals",
+      "type": "JournalEntry",
+      "system": "wfrp4e"
+    },
+    {
       "name": "ratter-11-tables",
       "label": "Ratter #11 Roll Tables",
       "path": "packs/ratter-11-tables",
@@ -79,6 +98,7 @@
           "color": "#465967",
           "packs": [
             "ratter-11-items",
+            "ratter-11-journals",
             "ratter-11-tables"
           ],
           "folders": []
@@ -102,5 +122,5 @@
   },
   "url": "https://github.com/jeremyglebe/FVTT-WFRP-Ratter-Content",
   "manifest": "https://github.com/jeremyglebe/FVTT-WFRP-Ratter-Content/releases/latest/download/module.json",
-  "download": "https://github.com/jeremyglebe/FVTT-WFRP-Ratter-Content/releases/download/v0.1.3/module.zip"
+  "download": "https://github.com/jeremyglebe/FVTT-WFRP-Ratter-Content/releases/download/v0.1.4/module.zip"
 }

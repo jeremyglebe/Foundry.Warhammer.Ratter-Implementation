@@ -8,12 +8,18 @@ WFRP4e system.
 Gamemasters can enable **Use The Mutant's Handbook mutation rules** in Module Settings. It replaces
 the standard Dissolution of Body and Mind aftermath with the Ratter #11 species, severity,
 Corruption-loss, normal Fortune or Dark Deal choices, Resilience, Chosen patron, and Chaos Spawn
-procedure, and adds rolled mutation Items to the character. For 42 reviewed mutations, adding the
-Item also grants its fixed Core Rulebook Talents or Creature Traits; existing Talents gain a level
-and existing Traits are not duplicated. This item-grant automation requires the WFRP4e Core Rulebook
-content module. Other mutation modifiers and choices described only in prose still require GM
-adjudication. Crossing a mutation limit flags the actor as a Chaos Spawn and stops further Handbook
-checks; the GM handles the actor's conversion or retirement.
+procedure, and adds rolled mutation Items to the character.
+
+Phase 1 covers all 224 described mutation Items (137 physical and 87 mental); the source's
+advertised 225 also counts Chosen of Chaos, a special outcome rather than an Item. It automates
+fixed and rolled Characteristic changes, Movement, Wounds, Size and Armour, unconditional Test
+modifiers, configured Skill/Talent/Trait grants, repeat limits and conflicts, and Self-Control
+actions for eligible mental mutations. Every Item states exactly what is automated and supplies a
+checklist for its remaining manual rules. The WFRP4e Core Rulebook content module is required for
+Core grants, and Winds of Magic is recommended for the optional Augury and Psychometry grants.
+
+Choices, subtables, body locations, activated or contextual powers, durations, auras, concealment,
+treatment, and Chaos Spawn conversion remain GM-facing work for later automation phases.
 
 Install or update the module with this manifest URL:
 
