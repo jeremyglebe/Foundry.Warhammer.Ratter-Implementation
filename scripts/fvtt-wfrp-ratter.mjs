@@ -1,12 +1,12 @@
 //#region src/module/constants.ts
-var e = "fvtt-wfrp-ratter", t = "Drowsy's WFRP4e Ratter Implementation", n = "fvtt-wfrp-ratter.ratter-11-tables", r = "mutantsHandbookPatron", i = "mutantsHandbookChaosSpawn", a = "mutantsHandbookRetired", o = "mutantsHandbookPossessionRemoved", s = "mutantsHandbookCorruption", c = {
+var e = "fvtt-wfrp-ratter", t = "Drowsy's WFRP4e Ratter Implementation", n = "fvtt-wfrp-ratter.ratter-11-tables", r = "mutantsHandbookPatron", i = "mutantsHandbookChaosSpawn", a = "mutantsHandbookRetired", o = "mutantsHandbookPossessionRemoved", s = "mutantsHandbookCorruption", c = "mutantsHandbookPendingCorruption", l = "mutantsHandbookPendingMutation", u = {
 	dwarf: "ueEWO9920dCmA7qP",
 	elf: "X4hMeYoCFx77QIvv",
 	gnome: "gktszioKqcA637wH",
 	halfling: "4QnKxakvIARiyqAq",
 	human: "2XUdBDbSoynCvCoL",
 	ogre: "5hidSDB0YHyyrTVi"
-}, l = "AAOqrs1CNIgUk5OI", u = {
+}, d = "AAOqrs1CNIgUk5OI", f = {
 	major: {
 		mental: "oDBJER6WRFUUCBZX",
 		physical: "T0RrHIA3JIYZqlvF"
@@ -19,12 +19,12 @@ var e = "fvtt-wfrp-ratter", t = "Drowsy's WFRP4e Ratter Implementation", n = "fv
 		mental: "720DtHbXYchWhSx1",
 		physical: "baHAuTz7BJJlvED1"
 	}
-}, d = {
+}, p = {
 	khorne: "ymLfyXm3vCnKqMqV",
 	nurgle: "rG3ht32Wh5SAVuNz",
 	slaanesh: "QHWmoKtujyUHxfG1",
 	tzeentch: "MuS2keCF2SFOZYCg"
-}, f = {
+}, ee = {
 	dwarf: "dwarf",
 	elf: "elf",
 	gnome: "gnome",
@@ -38,34 +38,34 @@ var e = "fvtt-wfrp-ratter", t = "Drowsy's WFRP4e Ratter Implementation", n = "fv
 	"wood elf": "elf",
 	"wood-elf": "elf"
 };
-function p(e) {
-	return f[e.trim().toLowerCase()];
+function te(e) {
+	return ee[e.trim().toLowerCase()];
 }
-function ee(e) {
+function ne(e) {
 	let t = e.trim().toLowerCase();
 	if (t.startsWith("physical")) return "physical";
 	if (t.startsWith("mental")) return "mental";
 }
-function te(e) {
+function re(e) {
 	let t = e.trim().toLowerCase();
 	if (t.startsWith("trivial")) return "trivial";
 	if (t.startsWith("minor")) return "minor";
 	if (t.startsWith("major")) return "major";
 	if (t.includes("chosen")) return "chosen";
 }
-function ne(e) {
+function ie(e) {
 	return Math.min(Math.max(0, Math.floor(e)), 4) * 10;
 }
-function re(e, t) {
+function ae(e, t) {
 	return e === "physical" ? t.toughness : t.willpower;
 }
-function ie(e, t) {
+function oe(e, t) {
 	return Math.max(0, e - Math.max(0, t));
 }
-function ae(e) {
+function se(e) {
 	let t = 0, n = 0;
 	for (let r of e) {
-		let e = ee(r);
+		let e = ne(r);
 		e === "mental" ? t += 1 : e === "physical" && (n += 1);
 	}
 	return {
@@ -74,125 +74,58 @@ function ae(e) {
 		total: e.length
 	};
 }
-function oe(e, t) {
+function ce(e, t) {
 	let n = [];
 	return e.physical > t.toughness && n.push("physical"), e.mental > t.willpower && n.push("mental"), n;
 }
 //#endregion
 //#region src/module/wfrp4e/mutants-handbook/document-helpers.ts
 function m(e) {
-	return typeof e == "object" && !!e && !Array.isArray(e);
-}
-function h(e) {
 	return e.trim().toLowerCase();
-}
-function se(t, n) {
-	return typeof t.getFlag == "function" ? t.getFlag(e, n) : void 0;
-}
-function ce(e) {
-	let t = e.itemTypes, n = Object.values(t ?? {}).flatMap((e) => e ?? []), r = [];
-	try {
-		r = Array.from(e.items);
-	} catch {}
-	return [...r, ...n].filter((e, t, n) => n.findIndex((t) => t === e || typeof e.id == "string" && e.id.length > 0 && t.id === e.id) === t);
 }
 function le(e) {
 	return e.getFlag("fvtt-wfrp-ratter", "mutantsHandbookRetired") === !0 || e.getFlag("fvtt-wfrp-ratter", "mutantsHandbookPossessionRemoved") === !0;
 }
-function g(e, t) {
+function ue(e, t) {
 	return (e.itemTypes.mutation ?? []).filter((e) => (t === void 0 || e.id !== t) && !le(e));
-}
-function _(e) {
-	return typeof e == "string" ? [h(e)] : Array.isArray(e) ? e.filter((e) => typeof e == "string").map(h) : [];
-}
-function ue(e) {
-	let t = se(e, "mutationAutomation");
-	if (!m(t)) return;
-	let n = t.state;
-	if (!m(n)) return;
-	let r = n.acquisition;
-	if (!(!m(r) || r.status !== "resolved")) return m(r.selections) ? r.selections : void 0;
-}
-function de(e, t, n) {
-	let r = ue(e);
-	if (!r) return !1;
-	let i = new Set(n.map(h));
-	return _(r[t]).some((e) => i.has(e));
-}
-function fe(e, t, n) {
-	let r = h(t);
-	return g(e, n).find((e) => h(e.name) === r);
-}
-function pe(e, t) {
-	let n = h(t);
-	return ce(e).some((e) => {
-		if (e.type !== "talent" || typeof e.name != "string") return !1;
-		let t = h(e.name);
-		return t === n || t.startsWith(`${n} (`);
-	});
-}
-function me(e, t) {
-	let n = e;
-	for (let e of t) {
-		if (!m(n)) return;
-		n = n[e];
-	}
-	return n;
-}
-function he(e) {
-	let t = e.currentCareer, n = [...m(t) ? [t] : [], ...ce(e).filter((e) => e.type === "career" && me(e.system, ["current", "value"]) === !0)];
-	for (let e of n) {
-		let t = me(e, [
-			"system",
-			"careergroup",
-			"value"
-		]);
-		if (typeof t == "string" && t.trim().length > 0) return h(t);
-	}
-}
-function ge(e, t) {
-	return g(e, t).some((e) => ["additional extremities", "additional limbs"].includes(h(e.name)) && de(e, "limb", ["legs"]));
-}
-function _e(e, t) {
-	return g(e, t).some((e) => ["additional extremities", "additional limbs"].includes(h(e.name)) && de(e, "limb", ["arms"]));
 }
 //#endregion
 //#region src/module/wfrp4e/mutants-handbook/actor-state.ts
-var ve = [
+var de = [
 	"khorne",
 	"nurgle",
 	"slaanesh",
 	"tzeentch",
 	"unassigned"
 ];
-function ye(e) {
+function fe(e) {
 	if (typeof e != "object" || !e) return !1;
 	let t = e;
 	return t.type === "character" && typeof t.name == "string" && typeof t.uuid == "string" && typeof t.createEmbeddedDocuments == "function" && typeof t.deleteEmbeddedDocuments == "function" && typeof t.getFlag == "function" && typeof t.has == "function" && typeof t.setupCharacteristic == "function" && typeof t.setupSkill == "function" && typeof t.update == "function" && typeof t.updateEmbeddedDocuments == "function";
 }
-function be(e) {
-	let t = xe(e) !== void 0;
-	return ae((e.itemTypes.mutation ?? []).filter((e) => !le(e) && !(t && h(e.name) === "possessed")).map((e) => e.system.mutationType.value));
+function pe(e) {
+	let t = me(e) !== void 0;
+	return se((e.itemTypes.mutation ?? []).filter((e) => !le(e) && !(t && m(e.name) === "possessed")).map((e) => e.system.mutationType.value));
 }
-function xe(t) {
+function me(t) {
 	let n = t.getFlag(e, r);
-	return ve.find((e) => e === n);
+	return de.find((e) => e === n);
 }
-function Se(e) {
-	return (e.itemTypes.mutation ?? []).some((e) => h(e.name) === "possessed" && !le(e));
+function he(e) {
+	return (e.itemTypes.mutation ?? []).some((e) => m(e.name) === "possessed" && !le(e));
 }
-function Ce(t) {
+function ge(t) {
 	return t.getFlag(e, i) === !0;
 }
-async function we(t) {
-	let n = (t.itemTypes.mutation ?? []).filter((e) => h(e.name) === "possessed" && !le(e)).map((t) => ({
+async function _e(t) {
+	let n = (t.itemTypes.mutation ?? []).filter((e) => m(e.name) === "possessed" && !le(e)).map((t) => ({
 		_id: t.id,
 		[`flags.${e}.${o}`]: !0
 	}));
 	if (n.length !== 0 && (await t.updateEmbeddedDocuments("Item", n)).length !== n.length) throw Error(`Foundry prevented Possessed from being retired for ${t.name}.`);
 }
-async function Te(t) {
-	let n = g(t).filter((e) => h(e.name) === "skinwalker");
+async function ve(t) {
+	let n = ue(t).filter((e) => m(e.name) === "skinwalker");
 	if (n.length === 0) return [];
 	let r = await t.updateEmbeddedDocuments("Item", n.map((t) => ({
 		_id: t.id,
@@ -201,7 +134,7 @@ async function Te(t) {
 	if (r.length !== n.length) {
 		let e = new Set(r.map((e) => e.id)), i = n.filter((t) => e.has(t.id)).map((e) => e.id);
 		try {
-			await Ee(t, i);
+			await ye(t, i);
 		} catch (e) {
 			throw AggregateError([e], `Foundry only partially retired Skinwalker for ${t.name}, and rollback failed.`, { cause: e });
 		}
@@ -209,179 +142,24 @@ async function Te(t) {
 	}
 	return n.map((e) => e.id);
 }
-async function Ee(e, t) {
+async function ye(e, t) {
 	if (t.length !== 0 && (await e.updateEmbeddedDocuments("Item", t.map((e) => ({
 		_id: e,
 		"flags.fvtt-wfrp-ratter.-=mutantsHandbookRetired": null
 	})))).length !== t.length) throw Error(`Foundry prevented retired mutations from being restored for ${e.name}.`);
 }
 //#endregion
-//#region src/module/wfrp4e/mutants-handbook/acquisition-eligibility.ts
-var De = new Set([
-	"bachtrachian suckers",
-	"bestial legs",
-	"centauroid",
-	"clubfoot",
-	"hopper",
-	"prehensile feet",
-	"unnatural legs"
-]);
-function Oe(e, t) {
-	let n = new Set(["left", "right"]), r = !1;
-	for (let i of g(e, t)) {
-		let e = h(i.name), t = ue(i);
-		if (e === "razor-sharp claws" && n.clear(), e === "pincer claw") {
-			let e = _(t?.["pincer-hand"]);
-			e.length === 0 && (r = !0);
-			for (let t of e) (t === "left" || t === "right") && n.delete(t);
-		}
-		if (e === "beweaponed extremities") {
-			let e = _(t?.arms);
-			if (e.includes("both")) n.clear();
-			else if (e.includes("one")) {
-				let e = _(t?.["weapon-side"]);
-				e.length === 0 && (r = !0);
-				for (let t of e) (t === "left" || t === "right") && n.delete(t);
-			} else r = !0;
-		}
-		if (e === "atrophy" && de(i, "atrophied-part", ["arm", "hand"])) {
-			let e = _(t?.["atrophy-side"]);
-			e.length === 0 && (r = !0);
-			for (let t of e) (t === "left" || t === "right") && n.delete(t);
-		}
-	}
-	return {
-		ambiguous: r,
-		extraArms: _e(e, t),
-		primaryHands: n
-	};
-}
-function ke(e, t, n, r, i) {
-	return g(e, i).some((e) => h(e.name) === h(t) && de(e, n, r));
-}
-function v(e) {
-	return {
-		kind: "eligibility",
-		message: e
-	};
-}
-function Ae(e, t, n) {
-	let r = h(t.name), i = [];
-	if (r === "chosen one" && pe(e, "Arcane Magic") && i.push(v(`${t.name} cannot be acquired with Arcane Magic.`)), r === "false wizard") {
-		xe(e) === "khorne" && i.push(v(`${t.name} cannot be acquired by a Chosen of Khorne.`));
-		let n = ["Bless", "Invoke"].filter((t) => pe(e, t));
-		n.length > 0 && i.push(v(`${t.name} cannot be acquired with ${n.join(" or ")}.`));
-	}
-	if (r === "malign sorcerer" && xe(e) === "khorne" && i.push(v(`${t.name} cannot be acquired with Khorne as patron.`)), r === "prince of nothing") {
-		let n = he(e);
-		n === "noble" ? i.push(v(`${t.name} cannot be acquired by an actual Noble.`)) : n === void 0 && i.push(v(`Confirm that ${e.name} is not an actual Noble before acquiring ${t.name}.`));
-	}
-	if (r === "headless") {
-		let r = fe(e, "Elongated Limbs", n);
-		r && de(r, "limb", ["neck"]) && i.push(v(`${t.name} cannot be acquired with Elongated Limbs (Neck).`));
-	}
-	if (r === "wings" && ke(e, "Wings", "wing-size", ["huge"], n) && i.push(v(`${t.name} cannot be acquired again after reaching Huge wings.`)), r === "beweaponed extremities" && ke(e, "Beweaponed Extremities", "arms", ["both"], n) && i.push(v(`${t.name} cannot be acquired again because a prior acquisition transformed both arms.`)), r === "pincer claw" || r === "razor-sharp claws") {
-		let r = Oe(e, n);
-		r.primaryHands.size === 0 && !r.extraArms && !r.ambiguous ? i.push(v(`${t.name} requires at least one ordinary clawless hand.`)) : (r.primaryHands.size === 0 || r.extraArms || r.ambiguous) && i.push(v(`Confirm that ${e.name} has an ordinary clawless hand that can receive ${t.name}; non-left/right or legacy hand anatomy cannot be inferred safely.`));
-	}
-	return r === "overgrown arm" && _e(e, n) && i.push(v(`Confirm which arm receives ${t.name}; resolved extra arms are not limited to the tracked left/right choices.`)), De.has(r) && fe(e, "Blob", n) && !ge(e, n) && i.push(v(`${t.name} alters legs, but ${e.name} has Blob and no resolved Additional Extremities (Legs).`)), i;
-}
-//#endregion
-//#region src/module/wfrp4e/mutants-handbook/acquisition-blocks.ts
-var je = {
-	"additional appendages": ["location", ["foot"]],
-	atrophy: ["atrophied-part", [
-		"foot",
-		"leg",
-		"toes"
-	]],
-	"elongated limbs": ["limb", ["legs"]],
-	"extra joints": ["jointed-limbs", ["legs"]]
-}, Me = {
-	"bestial arms": [
-		"bear",
-		"canine",
-		"caprine",
-		"feline",
-		"mustelid",
-		"primate",
-		"rodent"
-	],
-	"bestial body": [
-		"bear",
-		"canine",
-		"caprine",
-		"feline",
-		"primate"
-	],
-	"bestial feature": [
-		"bear",
-		"canine",
-		"caprine",
-		"feline",
-		"mustelid",
-		"primate",
-		"rodent"
-	],
-	"bestial head": [
-		"bear",
-		"canine",
-		"caprine",
-		"feline",
-		"primate"
-	],
-	"bestial legs": [
-		"bear",
-		"canine",
-		"caprine",
-		"feline",
-		"mustelid",
-		"primate",
-		"rodent"
-	]
-};
-function Ne(e) {
-	return e.filter((t, n) => e.findIndex((e) => e.kind === t.kind && e.message === t.message) === n);
-}
-function Pe(e, t, n) {
-	let r = g(e, n), i = r.filter((e) => h(e.name) === h(t.name)).length, a = t.acquisition?.max, o = [];
-	a !== void 0 && i >= a && o.push({
-		kind: "maximum",
-		message: `${t.name} has reached its acquisition maximum of ${a}.`
-	}), o.push(...Ae(e, t, n));
-	for (let e of t.acquisition?.conflicts ?? []) r.some((t) => h(t.name) === h(e)) && o.push({
-		kind: "conflict",
-		message: `${t.name} conflicts with the existing ${e} mutation.`
-	});
-	return Ne(o);
-}
-function Fe(e, t, n, r) {
-	if (n.status !== "resolved") return [];
-	let i = h(t), a = [];
-	i === "elongated limbs" && _(n.selections.limb).includes("neck") && fe(e, "Headless", r) && a.push(v(`${t} (Neck) cannot be acquired with Headless.`));
-	let o = je[i];
-	if (o && _(n.selections[o[0]]).some((e) => o[1].includes(e)) && fe(e, "Blob", r) && !ge(e, r) && a.push(v(`${t} selected a leg-altering result, but ${e.name} has Blob and no resolved Additional Extremities (Legs).`)), i === "questing eye") {
-		let e = n.selections["questing-eye"], r = typeof e == "string" && e.trim().length > 0 ? `“${e.trim()}” is` : "the chosen eye is";
-		a.push(v(`Confirm that ${r} an existing eye available to receive ${t}; exact eye anatomy is not reliably detectable.`));
-	}
-	if (fe(e, "Hairless", r)) {
-		let e = Me[i];
-		(i === "protective skin" && _(n.selections.skin).includes("fur") || e !== void 0 && _(n.selections["bestial-source"]).some((t) => e.includes(t))) && a.push(v(`${t} selected a hair or fur result, but Hairless prevents that manifestation; confirm whether to keep or reroll it.`));
-	}
-	return Ne(a);
-}
-//#endregion
 //#region src/module/wfrp4e/mutants-handbook/mutation-results.ts
-function Ie(e) {
+function be(e) {
 	if (typeof e != "object" || !e) return !1;
 	let t = e;
 	return t.type === "mutation" && typeof t.name == "string" && typeof t.toObject == "function" && !!t.system;
 }
-function Le(e) {
+function xe(e) {
 	let t = e.toObject();
 	return delete t._id, delete t._key, delete t._stats, delete t.folder, delete t.ownership, t;
 }
-function Re(t) {
+function Se(t) {
 	return {
 		data: {
 			effects: [],
@@ -405,30 +183,102 @@ function Re(t) {
 		nature: "mental"
 	};
 }
-async function ze(t, n) {
+async function Ce(t, n) {
 	if (!t.documentUuid) {
-		if (n === "khorne" && t.name.trim().toLowerCase() === "prejudice") return Re(t);
+		if (n === "khorne" && t.name.trim().toLowerCase() === "prejudice") return Se(t);
 		throw Error(`The table result ${t.name} does not link to a mutation Item.`);
 	}
 	let r = await fromUuid(t.documentUuid);
-	if (!Ie(r)) throw Error(`The table result ${t.name} does not resolve to a mutation Item.`);
-	let i = ee(r.system.mutationType.value);
+	if (!be(r)) throw Error(`The table result ${t.name} does not resolve to a mutation Item.`);
+	let i = ne(r.system.mutationType.value);
 	if (!i) throw Error(`The mutation ${r.name} has no physical or mental classification.`);
 	let a = r.getFlag(e, "mutationAutomation")?.acquisition;
 	return {
 		...a ? { acquisition: a } : {},
-		data: Le(r),
+		data: xe(r),
 		name: r.name,
 		nature: i
 	};
 }
 //#endregion
+//#region src/module/wfrp4e/mutants-handbook/updates.ts
+async function h(e, t) {
+	if (!await e.update(t, { skipCorruption: !0 })) throw Error(`Foundry prevented the required update to ${e.name}.`);
+}
+//#endregion
+//#region src/module/wfrp4e/mutants-handbook/pending-corruption.ts
+var we = `flags.${e}.${c}`, Te = `flags.${e}.-=${c}`, Ee = `flags.${e}.${l}`;
+function g(e) {
+	return typeof e == "object" && !!e && !Array.isArray(e);
+}
+function De(e) {
+	return e === "mental" || e === "physical";
+}
+function Oe(e) {
+	if (!(!g(e) || e.version !== 1) && (e.kind === "test" && typeof e.messageId == "string" || e.kind === "mutation" && typeof e.actorUuid == "string" && typeof e.mutationName == "string" && De(e.nature) && typeof e.token == "string")) return e;
+}
+function _(t) {
+	return Oe(t.getFlag(e, c));
+}
+function ke(e) {
+	return _(e) !== void 0;
+}
+async function Ae(e, t) {
+	await h(e, { [we]: {
+		kind: "test",
+		messageId: t,
+		version: 1
+	} });
+}
+async function je(e) {
+	await h(e, { [Te]: null });
+}
+function Me(e) {
+	let t = Oe(e.flags?.["fvtt-wfrp-ratter"]?.mutantsHandbookPendingMutation ?? e.getFlag("fvtt-wfrp-ratter", "mutantsHandbookPendingMutation"));
+	return t?.kind === "mutation" ? t : void 0;
+}
+function Ne(e, t) {
+	let n = e[t];
+	if (g(n)) return n;
+	let r = {};
+	return e[t] = r, r;
+}
+function Pe(e) {
+	let t = e.effects;
+	return Array.isArray(t) ? t.some((e) => {
+		if (!g(e)) return !1;
+		let t = e.system, n = g(t) ? t.scriptData : void 0;
+		return Array.isArray(n) && n.some((e) => g(e) && e.trigger === "immediate" && typeof e.label == "string" && e.label.startsWith("Acquire ") && typeof e.script == "string" && !e.script.includes("prepareMutationAcquisition"));
+	}) : !1;
+}
+function Fe(t, n) {
+	let r = structuredClone(t.data), i = Ne(Ne(r, "flags"), e);
+	if (i[l] = n, !Pe(r)) throw Error(`${t.name} has no embedded Mutant's Handbook acquisition script and cannot be posted.`);
+	return r;
+}
+async function Ie(e, t) {
+	let n = _(e), r = {
+		actorUuid: e.uuid,
+		kind: "mutation",
+		mutationName: t.name,
+		nature: t.nature,
+		token: crypto.randomUUID(),
+		version: 1
+	}, i = new Item.implementation(Fe(t, r));
+	await h(e, { [we]: r });
+	try {
+		await i.postItem(void 0, n?.kind === "test" ? { "flags.wfrp4e.sourceMessageId": n.messageId } : void 0);
+	} catch (t) {
+		throw await h(e, { ...n ? { [we]: n } : { [Te]: null } }), t;
+	}
+}
+//#endregion
 //#region src/module/wfrp4e/mutants-handbook/messages.ts
-function y(e, t) {
+function v(e, t) {
 	if (!game) throw Error("Foundry game global is unavailable while formatting a mutation message.");
 	return game.i18n.format(`FVTT_WFRP_RATTER.Mutations.${e}`, t);
 }
-async function b(e) {
+async function y(e) {
 	if (!game) throw Error("Foundry game global is unavailable while posting a mutation message.");
 	try {
 		let t = ChatMessage.applyMode({
@@ -440,141 +290,37 @@ async function b(e) {
 		console.error("The Mutant's Handbook workflow could not create an informational message.", e);
 	}
 }
-function x(e) {
+function Le(e) {
 	ui.notifications.warn(e);
 }
-function Be(e) {
+function b(e) {
 	let t = e instanceof Error ? e.message : String(e), n = game ? game.i18n.format("FVTT_WFRP_RATTER.Mutations.Error", { message: t }) : `The Mutant's Handbook mutation workflow failed: ${t}`;
 	console.error(e), ui.notifications.error(n);
 }
 //#endregion
-//#region src/module/wfrp4e/mutants-handbook/updates.ts
-async function S(e, t) {
-	if (!await e.update(t, { skipCorruption: !0 })) throw Error(`Foundry prevented the required update to ${e.name}.`);
-}
-//#endregion
-//#region src/module/wfrp4e/mutants-handbook/test-resolution.ts
-function Ve(e) {
-	if (!game) throw Error("Foundry game global is unavailable while resolving a corruption test.");
-	return game.i18n.localize(`FVTT_WFRP_RATTER.Mutations.${e}`);
-}
-function He(e, t) {
-	let n = [], r = Number(e.system.status.fortune?.value ?? 0);
-	return t.failed && r > 0 && !t.context.fortuneUsedReroll && n.push({
-		action: "fortune-reroll",
-		label: Ve("FortuneReroll")
-	}), r > 0 && !t.context.fortuneUsedAddSL && n.push({
-		action: "fortune-sl",
-		label: Ve("FortuneSL")
-	}), n.push({
-		action: "dark-deal",
-		label: Ve("DarkDeal")
-	}), n.push({
-		action: "accept",
-		default: !0,
-		label: Ve(t.failed ? "AcceptFailure" : "AcceptSuccess")
-	}), n;
-}
-async function Ue(e, t) {
-	if (!game) throw Error("Foundry game global is unavailable while resolving a corruption test.");
-	let n = await foundry.applications.api.DialogV2.wait({
-		buttons: He(e, t),
-		content: game.i18n.format(`FVTT_WFRP_RATTER.Mutations.${t.failed ? "TestResourcesPrompt" : "TestResourcesSuccessPrompt"}`, { name: e.name }),
-		rejectClose: !1,
-		window: { title: Ve("TestResourcesTitle") }
-	});
-	return n === "dark-deal" || n === "fortune-reroll" || n === "fortune-sl" ? n : "accept";
-}
-async function We(e, t, n, r) {
-	try {
-		await n();
-	} catch (n) {
-		try {
-			await S(e, t);
-		} catch (e) {
-			throw AggregateError([n, e], `${r} was spent, the reroll failed, and Foundry could not restore the resource.`, { cause: e });
-		}
-		throw n;
-	}
-}
-async function Ge(e, t, n) {
-	let r = Math.trunc(Number(e.system.status.fortune?.value ?? 0));
-	if (r <= 0) return x(y("FortuneUnavailable", { name: e.name })), !1;
-	let i = r - 1;
-	return await S(e, { "system.status.fortune.value": i }), n ? (t.context.fortuneUsedAddSL = !0, t.context.previousResult = { ...t.result }, t.preData.SL = Math.trunc(t.result.SL) + 1, t.preData.slBonus = 0, t.preData.successBonus = 0, t.preData.roll = Math.trunc(t.result.roll), await We(e, { "system.status.fortune.value": r }, () => t.roll(), "Fortune")) : (t.context.fortuneUsedReroll = !0, t.context.fortuneUsedAddSL = !0, await We(e, { "system.status.fortune.value": r }, () => t.reroll(), "Fortune")), await b(y(n ? "FortuneSLUsed" : "FortuneRerollUsed", {
-		name: e.name,
-		remaining: i
-	})), !0;
-}
-async function Ke(e, t) {
-	let n = Math.trunc(Number(e.system.status.corruption.value)), r = n + 1;
-	await S(e, { "system.status.corruption.value": r }), await We(e, { "system.status.corruption.value": n }, () => t.reroll(), "Dark Deal Corruption"), await b(y("DarkDealUsed", {
-		corruption: r,
-		maximum: Number(e.system.status.corruption.max),
-		name: e.name
-	}));
-}
-async function qe(e, t) {
-	for (;;) {
-		let n = await Ue(e, t);
-		if (n === "accept") return !t.failed;
-		n === "dark-deal" ? await Ke(e, t) : await Ge(e, t, n === "fortune-sl");
-	}
-}
-//#endregion
 //#region src/module/wfrp4e/mutants-handbook/dialogs.ts
-var Je = [
+var Re = [
 	"human",
 	"dwarf",
 	"elf",
 	"halfling",
 	"gnome",
 	"ogre"
-], Ye = [
+], ze = [
 	"khorne",
 	"nurgle",
 	"slaanesh",
 	"tzeentch"
 ];
-function Xe(e) {
+function Be(e) {
 	return `${e.charAt(0).toUpperCase()}${e.slice(1)}`;
 }
-function Ze(e) {
-	return e.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\"", "&quot;").replaceAll("'", "&#39;");
-}
-async function Qe(e, t, n) {
-	let r = [
-		...n ? [{
-			action: "reroll",
-			callback: () => "reroll",
-			default: !0,
-			label: "Reroll"
-		}] : [],
-		{
-			action: "accept",
-			callback: () => "accept",
-			default: !n,
-			label: "Accept Anyway"
-		},
-		{
-			action: "cancel",
-			callback: () => "cancel",
-			label: "Cancel"
-		}
-	], i = await foundry.applications.api.DialogV2.wait({
-		buttons: r,
-		content: `<div class="fvtt-wfrp-ratter-root"><div role="alert" class="tw:dui-alert tw:dui-alert-warning"><span>${Ze(t.message)}</span></div><p>${n ? "Reroll this table result, accept it despite the warning, or cancel the mutation procedure." : "Accept this mutation despite the warning, or cancel adding it."}</p></div>`,
-		rejectClose: !1,
-		window: { title: `Review ${e}` }
-	});
-	return i === "accept" || i === "reroll" ? i : "cancel";
-}
-async function $e(e, t) {
+async function Ve(e, t) {
 	if (!game) throw Error("Foundry game global is unavailable while choosing a species profile.");
 	let n = await foundry.applications.api.DialogV2.wait({
-		buttons: Je.map((e) => ({
+		buttons: Re.map((e) => ({
 			action: e,
-			label: Xe(e)
+			label: Be(e)
 		})),
 		content: game.i18n.format("FVTT_WFRP_RATTER.Mutations.UnknownSpeciesPrompt", {
 			name: e,
@@ -583,22 +329,22 @@ async function $e(e, t) {
 		rejectClose: !1,
 		window: { title: game.i18n.localize("FVTT_WFRP_RATTER.Mutations.UnknownSpeciesTitle") }
 	});
-	return Je.find((e) => e === n);
+	return Re.find((e) => e === n);
 }
-async function et(e) {
+async function He(e) {
 	if (!game) throw Error("Foundry game global is unavailable while choosing a Chaos patron.");
 	let t = await foundry.applications.api.DialogV2.wait({
-		buttons: Ye.map((e) => ({
+		buttons: ze.map((e) => ({
 			action: e,
-			label: Xe(e)
+			label: Be(e)
 		})),
 		content: game.i18n.format("FVTT_WFRP_RATTER.Mutations.PatronPrompt", { name: e }),
 		rejectClose: !1,
 		window: { title: game.i18n.localize("FVTT_WFRP_RATTER.Mutations.PatronTitle") }
 	});
-	return Ye.find((e) => e === t);
+	return ze.find((e) => e === t);
 }
-async function tt(e, t) {
+async function Ue(e, t) {
 	if (!game) throw Error("Foundry game global is unavailable while spending Resilience.");
 	return await foundry.applications.api.DialogV2.confirm({
 		content: game.i18n.format("FVTT_WFRP_RATTER.Mutations.ResiliencePrompt", {
@@ -613,11 +359,11 @@ async function tt(e, t) {
 }
 //#endregion
 //#region src/module/wfrp4e/mutants-handbook/automation/grant-data.ts
-function C(e) {
-	return Array.isArray(e) ? e.map(C) : typeof e == "object" && e ? Object.fromEntries(Object.entries(e).sort(([e], [t]) => e < t ? -1 : +(e > t)).map(([e, t]) => [e, C(t)])) : e;
+function x(e) {
+	return Array.isArray(e) ? e.map(x) : typeof e == "object" && e ? Object.fromEntries(Object.entries(e).sort(([e], [t]) => e < t ? -1 : +(e > t)).map(([e, t]) => [e, x(t)])) : e;
 }
-function nt(e) {
-	return JSON.stringify(C({
+function S(e) {
+	return JSON.stringify(x({
 		configure: e.configure ?? {},
 		ranks: e.ranks ?? 1,
 		scope: e.scope ?? "all",
@@ -626,14 +372,14 @@ function nt(e) {
 		type: e.type
 	}));
 }
-function rt(e) {
+function We(e) {
 	let t = { ...e };
-	return delete t.scope, nt({
+	return delete t.scope, S({
 		...t,
 		ranks: 1
 	});
 }
-function it(e) {
+function Ge(e) {
 	let t;
 	try {
 		t = JSON.parse(e);
@@ -642,9 +388,9 @@ function it(e) {
 	}
 	if (typeof t != "object" || !t || Array.isArray(t)) return;
 	let n = t;
-	if (!(n.stack !== "rank" || n.type !== "skill" && n.type !== "talent")) return n.ranks = 1, n.scope = "all", JSON.stringify(C(n));
+	if (!(n.stack !== "rank" || n.type !== "skill" && n.type !== "talent")) return n.ranks = 1, n.scope = "all", JSON.stringify(x(n));
 }
-function at(e, t) {
+function Ke(e, t) {
 	let n = e;
 	for (let e of t.split(".")) {
 		if (typeof n != "object" || !n) return;
@@ -652,7 +398,7 @@ function at(e, t) {
 	}
 	return n;
 }
-function ot(e, t, n) {
+function qe(e, t, n) {
 	let r = t.split(".").filter(Boolean), i = new Set([
 		"__proto__",
 		"constructor",
@@ -666,14 +412,14 @@ function ot(e, t, n) {
 	}
 	a[r.at(-1)] = n;
 }
-function st(e, t) {
+function Je(e, t) {
 	t.configure?.name && (e.name = t.configure.name);
 	let n = e.system, r = typeof n == "object" && n ? n : {};
 	e.system = r;
-	for (let [e, n] of Object.entries(t.configure?.system ?? {})) ot(r, e.replace(/^system\./, ""), C(n));
-	return t.ranks !== void 0 && (t.type === "skill" || t.type === "talent") && ot(r, "advances.value", t.ranks), e;
+	for (let [e, n] of Object.entries(t.configure?.system ?? {})) qe(r, e.replace(/^system\./, ""), x(n));
+	return t.ranks !== void 0 && (t.type === "skill" || t.type === "talent") && qe(r, "advances.value", t.ranks), e;
 }
-function ct(e, t, n) {
+function Ye(e, t, n) {
 	if (e.type !== n.type) return !1;
 	let r = e.toObject(), i = n.configure?.name ?? t.name;
 	if (r.name !== i) return !1;
@@ -681,15 +427,15 @@ function ct(e, t, n) {
 	if (typeof a != "object" || !a) return !1;
 	for (let [e, t] of Object.entries(n.configure?.system ?? {})) {
 		let n = e.replace(/^system\./, "");
-		if (JSON.stringify(C(at(a, n))) !== JSON.stringify(C(t))) return !1;
+		if (JSON.stringify(x(Ke(a, n))) !== JSON.stringify(x(t))) return !1;
 	}
-	return !(n.ranks !== void 0 && (n.type === "skill" || n.type === "talent") && Number(at(a, "advances.value")) !== n.ranks);
+	return !(n.ranks !== void 0 && (n.type === "skill" || n.type === "talent") && Number(Ke(a, "advances.value")) !== n.ranks);
 }
-function lt(e, t) {
+function Xe(e, t) {
 	let n = e.toObject()._stats;
 	return typeof n != "object" || !n ? !1 : n.compendiumSource === t;
 }
-function w(t) {
+function C(t) {
 	let n = t.flags?.[e]?.mutationGrant;
 	if (typeof n != "object" || !n) return;
 	let r = n;
@@ -700,14 +446,14 @@ function w(t) {
 		owners: i
 	};
 }
-function T(t) {
+function w(t) {
 	let n = t.flags?.[e]?.mutationGrantOwners;
 	return Array.isArray(n) ? n.filter((e) => typeof e == "string") : [];
 }
-function ut(t) {
+function Ze(t) {
 	return t.flags?.[e]?.mutationGrantManaged === !0;
 }
-function dt(t) {
+function Qe(t) {
 	let n = t.flags?.[e]?.mutationSkillGrant;
 	if (typeof n != "object" || !n) return;
 	let r = n;
@@ -720,7 +466,7 @@ function dt(t) {
 }
 //#endregion
 //#region src/functions/mutants-handbook/actions/constants.ts
-var ft = [
+var $e = [
 	"w8zPEHooiAzTdLYu",
 	"A7OLAWKXWUfh0UGU",
 	"O6QDcWXjqBD1C8R6",
@@ -738,11 +484,11 @@ var ft = [
 	"NDDLEunW5biRvTfy",
 	"q3sK3RsdsJxrifZP",
 	"mNNavbJayRcsyeXJ"
-], pt = ["b5xKInMaTt8ljJVQ"];
-[...ft, ...pt];
+], et = ["b5xKInMaTt8ljJVQ"];
+[...$e, ...et];
 //#endregion
 //#region src/functions/mutants-handbook/actions/support-item-ids.ts
-var E = {
+var T = {
 	"acidic-saliva-spit": "FebzFfLAxgNhm7wr",
 	"additional-head-control": "JewvTFlDyMLJBb2l",
 	"beast-alpha-command": "1MfdvldnRNRjRQLf",
@@ -819,14 +565,14 @@ var E = {
 	"warp-spasm-transform": "pGEJ3HWTAozRcuZr",
 	"werebeast-revert": "hDsSaNDAoQdi4pYy",
 	"werebeast-transform": "j4XrtvCyx7fKQYfu"
-}, mt = [
+}, tt = [
 	{
 		actionType: "attack",
 		conditions: ["Spitting, drooling acid onto objects, and consuming unusual materials share this TB-per-day allowance.", "Glass and gold are not damaged by the acid."],
 		duration: "Immediate",
 		id: "acidic-saliva-spit",
 		implementation: "support",
-		itemId: E["acidic-saliva-spit"],
+		itemId: T["acidic-saliva-spit"],
 		mutationId: "NvnDw82FSvjCpsxz",
 		mutationName: "Acidic Saliva",
 		name: "Spit Acid",
@@ -853,7 +599,7 @@ var E = {
 		duration: "GM-determined",
 		id: "beast-alpha-command",
 		implementation: "support",
-		itemId: E["beast-alpha-command"],
+		itemId: T["beast-alpha-command"],
 		mutationId: "IAojmuCNEt6z9EwB",
 		mutationName: "Beast Alpha",
 		name: "Command Beast",
@@ -872,7 +618,7 @@ var E = {
 		duration: "Immediate",
 		id: "bloodsucker-feed",
 		implementation: "support",
-		itemId: E["bloodsucker-feed"],
+		itemId: T["bloodsucker-feed"],
 		mutationId: "tBOg8CYxOPXLBUMF",
 		mutationName: "Bloodsucker",
 		name: "Feed on Blood",
@@ -887,7 +633,7 @@ var E = {
 		duration: "Immediate healing; symptom lasts 1d10 days",
 		id: "bloomblight-touch-heal",
 		implementation: "support",
-		itemId: E["bloomblight-touch-heal"],
+		itemId: T["bloomblight-touch-heal"],
 		mutationId: "Rpt4fqmrRuoN0Wz0",
 		mutationName: "Bloomblight Touch",
 		name: "Bloomblight Healing Touch",
@@ -923,7 +669,7 @@ var E = {
 		duration: "Immediate",
 		id: "dimensional-instability-teleport",
 		implementation: "support",
-		itemId: E["dimensional-instability-teleport"],
+		itemId: T["dimensional-instability-teleport"],
 		miscast: "minor",
 		mutationId: "w8zPEHooiAzTdLYu",
 		mutationName: "Dimensional Instability",
@@ -943,7 +689,7 @@ var E = {
 		duration: "4 hours per dose; only duration stacks",
 		id: "ecstatic-milk-produce-dose",
 		implementation: "support",
-		itemId: E["ecstatic-milk-produce-dose"],
+		itemId: T["ecstatic-milk-produce-dose"],
 		mutationId: "u5uyIhwDYnXOFOTY",
 		mutationName: "Ecstatic Milk",
 		name: "Produce Ecstatic Milk",
@@ -979,7 +725,7 @@ var E = {
 		duration: "WPB + SL hours",
 		id: "entrancement-beguile",
 		implementation: "support",
-		itemId: E["entrancement-beguile"],
+		itemId: T["entrancement-beguile"],
 		mutationId: "3K649FcYKM9vmAPo",
 		mutationName: "Entrancement",
 		name: "Entrancement",
@@ -998,7 +744,7 @@ var E = {
 		duration: "Conditions persist normally",
 		id: "evil-eye-gaze",
 		implementation: "support",
-		itemId: E["evil-eye-gaze"],
+		itemId: T["evil-eye-gaze"],
 		mutationId: "bgKHmWGNH4jxzOhC",
 		mutationName: "Evil Eye",
 		name: "Inflict Crippling Pain",
@@ -1030,7 +776,7 @@ var E = {
 		duration: "Permanent until altered again",
 		id: "fleshcrafter-cosmetic",
 		implementation: "support",
-		itemId: E["fleshcrafter-cosmetic"],
+		itemId: T["fleshcrafter-cosmetic"],
 		mutationId: "bnvOpEm16kCdb9oh",
 		mutationName: "Fleshcrafter",
 		name: "Cosmetic Fleshcraft",
@@ -1049,7 +795,7 @@ var E = {
 		duration: "Permanent until altered again",
 		id: "fleshcrafter-reshape",
 		implementation: "support",
-		itemId: E["fleshcrafter-reshape"],
+		itemId: T["fleshcrafter-reshape"],
 		mutationId: "bnvOpEm16kCdb9oh",
 		mutationName: "Fleshcrafter",
 		name: "Drastic Fleshcraft",
@@ -1068,7 +814,7 @@ var E = {
 		duration: "Permanent until altered again",
 		id: "fleshcrafter-bonecraft",
 		implementation: "support",
-		itemId: E["fleshcrafter-bonecraft"],
+		itemId: T["fleshcrafter-bonecraft"],
 		mutationId: "bnvOpEm16kCdb9oh",
 		mutationName: "Fleshcrafter",
 		name: "Bonecraft",
@@ -1087,7 +833,7 @@ var E = {
 		duration: "Immediate",
 		id: "fleshcrafter-stop-bleeding",
 		implementation: "support",
-		itemId: E["fleshcrafter-stop-bleeding"],
+		itemId: T["fleshcrafter-stop-bleeding"],
 		mutationId: "bnvOpEm16kCdb9oh",
 		mutationName: "Fleshcrafter",
 		name: "Fleshcraft Bleeding",
@@ -1106,7 +852,7 @@ var E = {
 		duration: "Stunned persists normally",
 		id: "frostbite-touch",
 		implementation: "support",
-		itemId: E["frostbite-touch"],
+		itemId: T["frostbite-touch"],
 		mutationId: "nToBQW3xOzVt9WhX",
 		mutationName: "Frostbite",
 		name: "Freezing Touch",
@@ -1120,14 +866,14 @@ var E = {
 			period: "scene"
 		}
 	}
-], ht = [
+], nt = [
 	{
 		actionType: "utility",
 		conditions: ["The skin normally adapts to the surroundings automatically.", "Passing for an unmutated person instead requires the source's Average (+20) Cool Test to resist adapting for the scene."],
 		duration: "One scene or until the surroundings materially change",
 		id: "chameleon-skin-camouflage",
 		implementation: "support",
-		itemId: E["chameleon-skin-camouflage"],
+		itemId: T["chameleon-skin-camouflage"],
 		mutationId: "mEaGI63MtfCQ9KS7",
 		mutationName: "Chameleon Skin",
 		name: "Use Chameleon Camouflage",
@@ -1142,7 +888,7 @@ var E = {
 		duration: "Applied to one spell as it is cast",
 		id: "spelleater-gland-spend-sl",
 		implementation: "support",
-		itemId: E["spelleater-gland-spend-sl"],
+		itemId: T["spelleater-gland-spend-sl"],
 		mutationId: "OTBdbPb9D9yfSFrm",
 		mutationName: "Spelleater Gland",
 		name: "Spend Stored Spell Energy",
@@ -1157,7 +903,7 @@ var E = {
 		duration: "WPB + SL rounds",
 		id: "ethereal-become-insubstantial",
 		implementation: "support",
-		itemId: E["ethereal-become-insubstantial"],
+		itemId: T["ethereal-become-insubstantial"],
 		miscast: "minor",
 		mutationId: "A7OLAWKXWUfh0UGU",
 		mutationName: "Ethereal",
@@ -1177,7 +923,7 @@ var E = {
 		duration: "WP + SL rounds; double duration for each additional mutation level",
 		id: "invisibility-vanish",
 		implementation: "support",
-		itemId: E["invisibility-vanish"],
+		itemId: T["invisibility-vanish"],
 		miscast: "minor",
 		mutationId: "1YH1DgABwSXNaMI7",
 		mutationName: "Invisibility",
@@ -1196,7 +942,7 @@ var E = {
 		duration: "One scene",
 		id: "oracle-foresight",
 		implementation: "support",
-		itemId: E["oracle-foresight"],
+		itemId: T["oracle-foresight"],
 		miscast: "minor",
 		mutationId: "0KO8587hDiF4PSCq",
 		mutationName: "Oracle",
@@ -1215,7 +961,7 @@ var E = {
 		duration: "GM-determined",
 		id: "wind-caller-breeze",
 		implementation: "support",
-		itemId: E["wind-caller-breeze"],
+		itemId: T["wind-caller-breeze"],
 		miscast: "minor",
 		mutationId: "UOkDReH2uUWWAgrf",
 		mutationName: "Wind Caller",
@@ -1235,7 +981,7 @@ var E = {
 		duration: "Immediate",
 		id: "hungering-maw-free-bite",
 		implementation: "support",
-		itemId: E["hungering-maw-free-bite"],
+		itemId: T["hungering-maw-free-bite"],
 		mutationId: "kMq1tiXJG6Pyp0nc",
 		mutationName: "Hungering Maw",
 		name: "Maw Free Bite",
@@ -1274,7 +1020,7 @@ var E = {
 		duration: "Immediate or the chosen Extended Test",
 		id: "wind-caller-gust",
 		implementation: "support",
-		itemId: E["wind-caller-gust"],
+		itemId: T["wind-caller-gust"],
 		miscast: "minor",
 		mutationId: "UOkDReH2uUWWAgrf",
 		mutationName: "Wind Caller",
@@ -1288,14 +1034,14 @@ var E = {
 			difficulty: "challenging"
 		}
 	}
-], gt = [
+], rt = [
 	{
 		actionType: "attack",
 		conditions: ["First succeed at the separate Green Sovereign power Test.", "Branches count as Improvised Weapons."],
 		duration: "Immediate",
 		id: "green-sovereign-branch-strike",
 		implementation: "support",
-		itemId: E["green-sovereign-branch-strike"],
+		itemId: T["green-sovereign-branch-strike"],
 		mutationId: "O6QDcWXjqBD1C8R6",
 		mutationName: "Green Sovereign",
 		name: "Branch Strike",
@@ -1320,7 +1066,7 @@ var E = {
 		duration: "Normal grapple duration",
 		id: "green-sovereign-root-grapple",
 		implementation: "support",
-		itemId: E["green-sovereign-root-grapple"],
+		itemId: T["green-sovereign-root-grapple"],
 		mutationId: "O6QDcWXjqBD1C8R6",
 		mutationName: "Green Sovereign",
 		name: "Root and Vine Grapple",
@@ -1339,7 +1085,7 @@ var E = {
 		duration: "Immediate",
 		id: "telekinesis-hurl-projectile",
 		implementation: "support",
-		itemId: E["telekinesis-hurl-projectile"],
+		itemId: T["telekinesis-hurl-projectile"],
 		mutationId: "xpllKoAOD5X9C8Pi",
 		mutationName: "Telekinesis",
 		name: "Hurl Telekinetic Projectile",
@@ -1358,7 +1104,7 @@ var E = {
 		duration: "Immediate",
 		id: "life-leech-combat-touch",
 		implementation: "support",
-		itemId: E["life-leech-combat-touch"],
+		itemId: T["life-leech-combat-touch"],
 		mutationId: "oyDtC4mkFBxcCYju",
 		mutationName: "Life Leech",
 		name: "Combat Touch",
@@ -1377,7 +1123,7 @@ var E = {
 		duration: "Immediate",
 		id: "thunderhead-combat-touch",
 		implementation: "support",
-		itemId: E["thunderhead-combat-touch"],
+		itemId: T["thunderhead-combat-touch"],
 		mutationId: "sdXBHwy9bpRcLriW",
 		mutationName: "Thunderhead",
 		name: "Combat Touch",
@@ -1390,7 +1136,7 @@ var E = {
 			skill: "melee-brawling"
 		}
 	}
-], _t = [
+], it = [
 	{
 		actionType: "control",
 		duration: "Immediate",
@@ -1410,7 +1156,7 @@ var E = {
 		duration: "Measured per turn of sustained gnawing",
 		id: "gnawer-gnaw",
 		implementation: "support",
-		itemId: E["gnawer-gnaw"],
+		itemId: T["gnawer-gnaw"],
 		mutationId: "NSczK3KBMIJztNFL",
 		mutationName: "Gnawer",
 		name: "Gnaw Organic Material",
@@ -1425,7 +1171,7 @@ var E = {
 		duration: "GM-determined",
 		id: "green-sovereign-command-plants",
 		implementation: "support",
-		itemId: E["green-sovereign-command-plants"],
+		itemId: T["green-sovereign-command-plants"],
 		miscast: "minor",
 		mutationId: "O6QDcWXjqBD1C8R6",
 		mutationName: "Green Sovereign",
@@ -1445,7 +1191,7 @@ var E = {
 		duration: "Immediate strike or normal grapple duration",
 		id: "green-sovereign-strike-or-grapple",
 		implementation: "support",
-		itemId: E["green-sovereign-strike-or-grapple"],
+		itemId: T["green-sovereign-strike-or-grapple"],
 		miscast: "minor",
 		mutationId: "O6QDcWXjqBD1C8R6",
 		mutationName: "Green Sovereign",
@@ -1465,7 +1211,7 @@ var E = {
 		duration: "Immediate",
 		id: "gut-worm-attack",
 		implementation: "support",
-		itemId: E["gut-worm-attack"],
+		itemId: T["gut-worm-attack"],
 		mutationId: "sfoURj3eoxtUYRFf",
 		mutationName: "Gut Worm",
 		name: "Gut Worm Free Attack",
@@ -1503,7 +1249,7 @@ var E = {
 		duration: "Conditions persist normally",
 		id: "horrid-scream-unleash",
 		implementation: "support",
-		itemId: E["horrid-scream-unleash"],
+		itemId: T["horrid-scream-unleash"],
 		mutationId: "zwl6VTWh854Bvheu",
 		mutationName: "Horrid Scream",
 		name: "Unleash Horrid Scream",
@@ -1531,7 +1277,7 @@ var E = {
 		duration: "Normal grapple duration",
 		id: "hungering-maw-grapple",
 		implementation: "support",
-		itemId: E["hungering-maw-grapple"],
+		itemId: T["hungering-maw-grapple"],
 		mutationId: "kMq1tiXJG6Pyp0nc",
 		mutationName: "Hungering Maw",
 		name: "Maw Free Grapple",
@@ -1551,7 +1297,7 @@ var E = {
 		duration: "Immediate",
 		id: "infernal-furnace-breath",
 		implementation: "support",
-		itemId: E["infernal-furnace-breath"],
+		itemId: T["infernal-furnace-breath"],
 		mutationId: "IUBfAizppAlcAgWL",
 		mutationName: "Infernal Furnace",
 		name: "Infernal Breath",
@@ -1575,7 +1321,7 @@ var E = {
 		duration: "WPB + SL rounds; double duration for each additional mutation level",
 		id: "levitation-rise",
 		implementation: "support",
-		itemId: E["levitation-rise"],
+		itemId: T["levitation-rise"],
 		miscast: "minor",
 		mutationId: "rMh2lJZMML0W61MH",
 		mutationName: "Levitation",
@@ -1595,7 +1341,7 @@ var E = {
 		duration: "Immediate",
 		id: "life-leech-touch",
 		implementation: "support",
-		itemId: E["life-leech-touch"],
+		itemId: T["life-leech-touch"],
 		miscast: "minor",
 		mutationId: "oyDtC4mkFBxcCYju",
 		mutationName: "Life Leech",
@@ -1632,7 +1378,7 @@ var E = {
 		duration: "WP + (SL x 10) minutes; double duration for each additional mutation level",
 		id: "mirror-image-disguise",
 		implementation: "support",
-		itemId: E["mirror-image-disguise"],
+		itemId: T["mirror-image-disguise"],
 		miscast: "minor",
 		mutationId: "XheCM6GZG8FhAoGp",
 		mutationName: "Mirror Image",
@@ -1651,7 +1397,7 @@ var E = {
 		duration: "As the Augury Skill",
 		id: "oracle-augury",
 		implementation: "support",
-		itemId: E["oracle-augury"],
+		itemId: T["oracle-augury"],
 		miscast: "minor",
 		mutationId: "0KO8587hDiF4PSCq",
 		mutationName: "Oracle",
@@ -1669,7 +1415,7 @@ var E = {
 			period: "day"
 		}
 	}
-], vt = [
+], at = [
 	{
 		actionType: "control",
 		duration: "As the owned Creature Trait",
@@ -1689,7 +1435,7 @@ var E = {
 		duration: "WP + (SL x 10) minutes",
 		id: "phantasmal-mind-illusion",
 		implementation: "support",
-		itemId: E["phantasmal-mind-illusion"],
+		itemId: T["phantasmal-mind-illusion"],
 		miscast: "minor",
 		mutationId: "tZZlX68I8HTDr3Db",
 		mutationName: "Phantasmal Mind",
@@ -1709,7 +1455,7 @@ var E = {
 		duration: "One round",
 		id: "phantasmal-mind-animate",
 		implementation: "support",
-		itemId: E["phantasmal-mind-animate"],
+		itemId: T["phantasmal-mind-animate"],
 		mutationId: "tZZlX68I8HTDr3Db",
 		mutationName: "Phantasmal Mind",
 		name: "Animate Phantasmal Image",
@@ -1728,7 +1474,7 @@ var E = {
 		duration: "Immediate",
 		id: "piercing-tongue-attack",
 		implementation: "support",
-		itemId: E["piercing-tongue-attack"],
+		itemId: T["piercing-tongue-attack"],
 		mutationId: "uAYtIoGnhuRpIjs9",
 		mutationName: "Piercing Tongue",
 		name: "Piercing Tongue",
@@ -1766,7 +1512,7 @@ var E = {
 		duration: "Immediate ignition; Ablaze persists normally",
 		id: "pyrokinesis-ignite",
 		implementation: "support",
-		itemId: E["pyrokinesis-ignite"],
+		itemId: T["pyrokinesis-ignite"],
 		miscast: "minor",
 		mutationId: "5KF01h4PSOrrABbf",
 		mutationName: "Pyrokinesis",
@@ -1786,7 +1532,7 @@ var E = {
 		duration: "Immediate; Ablaze persists normally",
 		id: "pyrokinesis-blast",
 		implementation: "support",
-		itemId: E["pyrokinesis-blast"],
+		itemId: T["pyrokinesis-blast"],
 		miscast: "minor",
 		mutationId: "5KF01h4PSOrrABbf",
 		mutationName: "Pyrokinesis",
@@ -1811,7 +1557,7 @@ var E = {
 		duration: "Immediate",
 		id: "razor-sharp-claws-attack",
 		implementation: "support",
-		itemId: E["razor-sharp-claws-attack"],
+		itemId: T["razor-sharp-claws-attack"],
 		mutationId: "5KLgj76uWOvi1Hx0",
 		mutationName: "Razor-sharp Claws",
 		name: "Razor-sharp Claws",
@@ -1836,7 +1582,7 @@ var E = {
 		duration: "As the Psychometry Skill",
 		id: "scrying-touch-psychometry",
 		implementation: "support",
-		itemId: E["scrying-touch-psychometry"],
+		itemId: T["scrying-touch-psychometry"],
 		mutationId: "EcZopIPOTXZofeHh",
 		mutationName: "Scrying Touch",
 		name: "Psychometry",
@@ -1862,14 +1608,14 @@ var E = {
 		rules: "The Core Web Creature Trait supplies its Test and entangling effects.",
 		target: "single"
 	}
-], yt = [
+], ot = [
 	{
 		actionType: "control",
 		conditions: ["Target every creature currently engaged with the mutant."],
 		duration: "Resolve at the end of each Round",
 		id: "burning-body-aura",
 		implementation: "support",
-		itemId: E["burning-body-aura"],
+		itemId: T["burning-body-aura"],
 		mutationId: "jTQNDgvjHRM2s357",
 		mutationName: "Burning Body",
 		name: "Resolve Burning Aura",
@@ -1884,7 +1630,7 @@ var E = {
 		duration: "One Round",
 		id: "contagious-madness-aura",
 		implementation: "support",
-		itemId: E["contagious-madness-aura"],
+		itemId: T["contagious-madness-aura"],
 		mutationId: "1TCTKzF5nkk90k4A",
 		mutationName: "Contagious Madness",
 		name: "Resolve Contagious Madness Aura",
@@ -1899,7 +1645,7 @@ var E = {
 		duration: "Immediate",
 		id: "infernal-furnace-critical-burst",
 		implementation: "support",
-		itemId: E["infernal-furnace-critical-burst"],
+		itemId: T["infernal-furnace-critical-burst"],
 		mutationId: "IUBfAizppAlcAgWL",
 		mutationName: "Infernal Furnace",
 		name: "Resolve Body-Critical Flame Burst",
@@ -1914,7 +1660,7 @@ var E = {
 		duration: "Immediate",
 		id: "infernal-furnace-death-explosion",
 		implementation: "support",
-		itemId: E["infernal-furnace-death-explosion"],
+		itemId: T["infernal-furnace-death-explosion"],
 		mutationId: "IUBfAizppAlcAgWL",
 		mutationName: "Infernal Furnace",
 		name: "Resolve Death Explosion",
@@ -1929,7 +1675,7 @@ var E = {
 		duration: "Resolve each Round",
 		id: "tantalising-aura",
 		implementation: "support",
-		itemId: E["tantalising-aura"],
+		itemId: T["tantalising-aura"],
 		mutationId: "UocYY55QaW15zWYk",
 		mutationName: "Tantalising Aura",
 		name: "Resolve Tantalising Aura",
@@ -1938,12 +1684,12 @@ var E = {
 		rules: "Select all living creatures in range, then apply the outcome from this card.",
 		target: "multiple"
 	}
-], D = (e) => ({
+], E = (e) => ({
 	...e,
 	implementation: "support",
-	itemId: E[e.id]
-}), bt = [
-	D({
+	itemId: T[e.id]
+}), st = [
+	E({
 		actionType: "control",
 		duration: "Immediate",
 		id: "additional-head-control",
@@ -1959,7 +1705,7 @@ var E = {
 			difficulty: "average"
 		}
 	}),
-	D({
+	E({
 		actionType: "companion",
 		duration: "Persistent; regrows one month after destruction",
 		id: "bodysnatcher-drone-deploy",
@@ -1971,7 +1717,7 @@ var E = {
 		rules: "Applying the outcome creates one managed drone Actor and links it to this mutant.",
 		target: "self"
 	}),
-	D({
+	E({
 		actionType: "form",
 		conditions: ["The assumed humanoid species must have been observed for at least one hour."],
 		duration: "TB + SL hours",
@@ -1989,7 +1735,7 @@ var E = {
 			difficulty: "challenging"
 		}
 	}),
-	D({
+	E({
 		actionType: "form",
 		duration: "Immediate",
 		id: "shapeshifter-revert-form",
@@ -2001,7 +1747,7 @@ var E = {
 		rules: "Apply this outcome to return to the mutant's natural form.",
 		target: "self"
 	}),
-	D({
+	E({
 		actionType: "form",
 		conditions: ["Target the consumed humanoid or ordinary beast whose form is being stored."],
 		duration: "Until voluntarily reverted or a new source is consumed",
@@ -2014,7 +1760,7 @@ var E = {
 		rules: "The four-hour consumption and source eligibility remain GM-verified prerequisites.",
 		target: "single"
 	}),
-	D({
+	E({
 		actionType: "form",
 		duration: "Immediate",
 		id: "skinwalker-revert-form",
@@ -2026,7 +1772,7 @@ var E = {
 		rules: "Apply this outcome to return to the mutant's natural form.",
 		target: "self"
 	}),
-	D({
+	E({
 		actionType: "companion",
 		duration: "Persistent",
 		id: "spectral-companion-manifest",
@@ -2038,7 +1784,7 @@ var E = {
 		rules: "The GM supplies or imports the chosen spirit's full creature profile if needed.",
 		target: "self"
 	}),
-	D({
+	E({
 		actionType: "form",
 		duration: "Until reformed",
 		id: "swarmform-transform",
@@ -2055,7 +1801,7 @@ var E = {
 			difficulty: "challenging"
 		}
 	}),
-	D({
+	E({
 		actionType: "form",
 		duration: "Immediate",
 		id: "swarmform-reform",
@@ -2067,7 +1813,7 @@ var E = {
 		rules: "The GM resolves separated or destroyed portions before reformation.",
 		target: "self"
 	}),
-	D({
+	E({
 		actionType: "companion",
 		duration: "Permanent",
 		id: "symbiotic-twin-manifest",
@@ -2079,7 +1825,7 @@ var E = {
 		rules: "Use once after acquisition; the two Actors progress independently afterward.",
 		target: "self"
 	}),
-	D({
+	E({
 		actionType: "companion",
 		duration: "Permanent while attached",
 		id: "vestigial-twin-manifest",
@@ -2091,7 +1837,7 @@ var E = {
 		rules: "The managed Actor records the retained personality, motivation, and ambitions.",
 		target: "self"
 	}),
-	D({
+	E({
 		actionType: "form",
 		duration: "One battle",
 		id: "warp-spasm-transform",
@@ -2103,7 +1849,7 @@ var E = {
 		rules: "The form ends automatically with combat or by using End Warp Spasm.",
 		target: "self"
 	}),
-	D({
+	E({
 		actionType: "form",
 		duration: "Immediate",
 		id: "warp-spasm-end",
@@ -2115,7 +1861,7 @@ var E = {
 		rules: "Apply ignored Critical Wound penalties before ending the form.",
 		target: "self"
 	}),
-	D({
+	E({
 		actionType: "form",
 		conditions: ["Apply the Morrslieb modifier printed in the mutation before rolling."],
 		duration: "Until reverted",
@@ -2133,7 +1879,7 @@ var E = {
 			difficulty: "challenging"
 		}
 	}),
-	D({
+	E({
 		actionType: "form",
 		conditions: ["Apply the inverse Morrslieb modifier printed in the mutation before rolling."],
 		duration: "Immediate",
@@ -2151,14 +1897,14 @@ var E = {
 			difficulty: "challenging"
 		}
 	})
-], xt = [
+], ct = [
 	{
 		actionType: "control",
 		conditions: ["The retained Tail result must be Mace Tail."],
 		duration: "Immediate",
 		id: "tail-mace-free-attack",
 		implementation: "support",
-		itemId: E["tail-mace-free-attack"],
+		itemId: T["tail-mace-free-attack"],
 		mutationId: "bSVbWpX8AcBSIyTU",
 		mutationName: "Tail",
 		name: "Mace Tail Free Attack",
@@ -2184,7 +1930,7 @@ var E = {
 		duration: "Immediate",
 		id: "tail-prehensile-free-attack",
 		implementation: "support",
-		itemId: E["tail-prehensile-free-attack"],
+		itemId: T["tail-prehensile-free-attack"],
 		mutationId: "bSVbWpX8AcBSIyTU",
 		mutationName: "Tail",
 		name: "Prehensile Tail Free Attack",
@@ -2200,7 +1946,7 @@ var E = {
 		duration: "Immediate",
 		id: "tail-scorpion-free-attack",
 		implementation: "support",
-		itemId: E["tail-scorpion-free-attack"],
+		itemId: T["tail-scorpion-free-attack"],
 		mutationId: "bSVbWpX8AcBSIyTU",
 		mutationName: "Tail",
 		name: "Scorpion Stinger Free Attack",
@@ -2226,7 +1972,7 @@ var E = {
 		duration: "WP rounds",
 		id: "telekinesis-move-object",
 		implementation: "support",
-		itemId: E["telekinesis-move-object"],
+		itemId: T["telekinesis-move-object"],
 		miscast: "minor",
 		mutationId: "xpllKoAOD5X9C8Pi",
 		mutationName: "Telekinesis",
@@ -2246,7 +1992,7 @@ var E = {
 		duration: "Immediate",
 		id: "telekinesis-hurl-weapon",
 		implementation: "support",
-		itemId: E["telekinesis-hurl-weapon"],
+		itemId: T["telekinesis-hurl-weapon"],
 		miscast: "minor",
 		mutationId: "xpllKoAOD5X9C8Pi",
 		mutationName: "Telekinesis",
@@ -2266,7 +2012,7 @@ var E = {
 		duration: "The same round",
 		id: "telepathy-project-thoughts",
 		implementation: "support",
-		itemId: E["telepathy-project-thoughts"],
+		itemId: T["telepathy-project-thoughts"],
 		miscast: "minor",
 		mutationId: "ihjcMhBrb24nwkhm",
 		mutationName: "Telepathy",
@@ -2290,7 +2036,7 @@ var E = {
 		duration: "Immediate",
 		id: "telepathy-read-thoughts",
 		implementation: "support",
-		itemId: E["telepathy-read-thoughts"],
+		itemId: T["telepathy-read-thoughts"],
 		miscast: "minor",
 		mutationId: "ihjcMhBrb24nwkhm",
 		mutationName: "Telepathy",
@@ -2310,7 +2056,7 @@ var E = {
 		duration: "The current turn",
 		id: "temporal-instability-surge",
 		implementation: "support",
-		itemId: E["temporal-instability-surge"],
+		itemId: T["temporal-instability-surge"],
 		miscast: "major",
 		mutationId: "b5xKInMaTt8ljJVQ",
 		mutationName: "Temporal Instability",
@@ -2330,7 +2076,7 @@ var E = {
 		duration: "Immediate",
 		id: "thorns-launch",
 		implementation: "support",
-		itemId: E["thorns-launch"],
+		itemId: T["thorns-launch"],
 		mutationId: "3I87KH11NFbNEfIW",
 		mutationName: "Thorns",
 		name: "Launch Thorn",
@@ -2353,7 +2099,7 @@ var E = {
 		duration: "Immediate",
 		id: "thorns-unarmed",
 		implementation: "support",
-		itemId: E["thorns-unarmed"],
+		itemId: T["thorns-unarmed"],
 		mutationId: "3I87KH11NFbNEfIW",
 		mutationName: "Thorns",
 		name: "Thorn-covered Unarmed Attack",
@@ -2377,7 +2123,7 @@ var E = {
 		duration: "Stunned persists normally",
 		id: "thunderhead-shock",
 		implementation: "support",
-		itemId: E["thunderhead-shock"],
+		itemId: T["thunderhead-shock"],
 		miscast: "minor",
 		mutationId: "sdXBHwy9bpRcLriW",
 		mutationName: "Thunderhead",
@@ -2397,7 +2143,7 @@ var E = {
 		duration: "Immediate; Blinded persists normally",
 		id: "thunderhead-lightning-bolt",
 		implementation: "support",
-		itemId: E["thunderhead-lightning-bolt"],
+		itemId: T["thunderhead-lightning-bolt"],
 		miscast: "minor",
 		mutationId: "sdXBHwy9bpRcLriW",
 		mutationName: "Thunderhead",
@@ -2416,27 +2162,27 @@ var E = {
 			specification: "+0"
 		}
 	}
-], St = Object.freeze([
-	...mt,
-	..._t,
-	...vt,
-	...xt,
-	...gt,
-	...ht,
-	...yt,
-	...bt
-]), Ct = new Map(St.map((e) => [e.id, e])), wt = /* @__PURE__ */ new Map();
-for (let e of St) {
-	let t = wt.get(e.mutationId) ?? [];
-	t.push(e), wt.set(e.mutationId, t);
+], lt = Object.freeze([
+	...tt,
+	...it,
+	...at,
+	...ct,
+	...rt,
+	...nt,
+	...ot,
+	...st
+]), ut = new Map(lt.map((e) => [e.id, e])), dt = /* @__PURE__ */ new Map();
+for (let e of lt) {
+	let t = dt.get(e.mutationId) ?? [];
+	t.push(e), dt.set(e.mutationId, t);
 }
-new Map([...wt].map(([e, t]) => [e, Object.freeze(t)]));
-function Tt(e) {
-	return Ct.get(e);
+new Map([...dt].map(([e, t]) => [e, Object.freeze(t)]));
+function ft(e) {
+	return ut.get(e);
 }
 //#endregion
 //#region src/functions/mutants-handbook/actions/outcomes.ts
-var Et = {
+var pt = {
 	"bodysnatcher-drone-deploy": [{
 		companion: "bodysnatcher-drone",
 		kind: "companion",
@@ -2735,28 +2481,28 @@ var Et = {
 		when: "success"
 	}]
 };
-function Dt(e) {
-	return Et[e] ?? [];
+function D(e) {
+	return pt[e] ?? [];
 }
-Object.freeze(Object.keys(Et));
+Object.freeze(Object.keys(pt));
 //#endregion
 //#region src/module/wfrp4e/mutants-handbook/automation/grant-reconciliation/acquisition-grants.ts
-var Ot = new Set([
+var mt = new Set([
 	"armour",
 	"psychology",
 	"skill",
 	"talent",
 	"trait",
 	"weapon"
-]), kt = new Set([
+]), ht = new Set([
 	"configuration",
 	"rank",
 	"singleton"
-]), At = 256, jt = new Set([
+]), gt = 256, _t = new Set([
 	"__proto__",
 	"constructor",
 	"prototype"
-]), Mt = /^Compendium\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.Item\.[A-Za-z0-9_-]+$/, Nt = /^[A-Za-z0-9][A-Za-z0-9:_-]{0,127}$/, O = Symbol("invalid-acquisition-value"), Pt = "bSVbWpX8AcBSIyTU", Ft = {
+]), vt = /^Compendium\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.Item\.[A-Za-z0-9_-]+$/, yt = /^[A-Za-z0-9][A-Za-z0-9:_-]{0,127}$/, O = Symbol("invalid-acquisition-value"), bt = "bSVbWpX8AcBSIyTU", xt = {
 	mace: ["tail-mace-free-attack", "Mace Tail: Free Attack"],
 	prehensile: ["tail-prehensile-free-attack", "Prehensile Tail: Free Attack"],
 	scorpion: ["tail-scorpion-free-attack", "Scorpion Stinger: Free Attack"]
@@ -2782,18 +2528,18 @@ function A(e, t, n = 0) {
 	if (!k(e)) return O;
 	let r = {};
 	for (let [i, a] of Object.entries(e)) {
-		if (jt.has(i)) return O;
+		if (_t.has(i)) return O;
 		let e = A(a, t, n + 1);
 		if (e === O) return O;
 		r[i] = e;
 	}
 	return t.delete(e), r;
 }
-function It(e) {
+function St(e) {
 	let t = e.replace(/^system\./, ""), n = t.split(".");
-	return t.length > 0 && n.every((e) => e && !jt.has(e)) ? t : void 0;
+	return t.length > 0 && n.every((e) => e && !_t.has(e)) ? t : void 0;
 }
-function Lt(e) {
+function Ct(e) {
 	if (e === void 0 || !k(e) || Object.keys(e).some((e) => e !== "name" && e !== "system")) return;
 	let t = {};
 	if (e.name !== void 0) {
@@ -2804,7 +2550,7 @@ function Lt(e) {
 		if (!k(e.system)) return;
 		let n = {}, r = [];
 		for (let [t, i] of Object.entries(e.system)) {
-			let e = It(t), a = A(i, /* @__PURE__ */ new Set());
+			let e = St(t), a = A(i, /* @__PURE__ */ new Set());
 			if (!e || a === O || r.some((t) => e.startsWith(`${t}.`) || t.startsWith(`${e}.`))) return;
 			r.push(e), n[t] = a;
 		}
@@ -2812,7 +2558,7 @@ function Lt(e) {
 	}
 	return t;
 }
-function Rt(e) {
+function wt(e) {
 	if (!k(e)) return;
 	let t = new Set([
 		"aggregate",
@@ -2828,12 +2574,12 @@ function Rt(e) {
 	]);
 	if (Object.keys(e).some((e) => !t.has(e))) return;
 	let { key: n, name: r, sourceUuid: i, type: a } = e;
-	if (typeof n != "string" || !Nt.test(n) || typeof r != "string" || r.trim().length === 0 || typeof i != "string" || !Mt.test(i) || typeof a != "string" || !Ot.has(a)) return;
+	if (typeof n != "string" || !yt.test(n) || typeof r != "string" || r.trim().length === 0 || typeof i != "string" || !vt.test(i) || typeof a != "string" || !mt.has(a)) return;
 	let o = e.stack ?? "singleton";
-	if (typeof o != "string" || !kt.has(o) || o === "rank" && a !== "skill" && a !== "talent" || e.scope !== void 0 && e.scope !== "first" || e.aggregate !== void 0 && e.aggregate !== "latest" || e.aggregate === "latest" && o !== "configuration") return;
+	if (typeof o != "string" || !ht.has(o) || o === "rank" && a !== "skill" && a !== "talent" || e.scope !== void 0 && e.scope !== "first" || e.aggregate !== void 0 && e.aggregate !== "latest" || e.aggregate === "latest" && o !== "configuration") return;
 	let s = e.aggregateKey;
-	if (s !== void 0 && (typeof s != "string" || s.trim().length === 0 || s.length > At) || e.ranks !== void 0 && (!Number.isSafeInteger(e.ranks) || Number(e.ranks) < 1) || e.ranks !== void 0 && a !== "skill" && a !== "talent") return;
-	let c = Lt(e.configure);
+	if (s !== void 0 && (typeof s != "string" || s.trim().length === 0 || s.length > gt) || e.ranks !== void 0 && (!Number.isSafeInteger(e.ranks) || Number(e.ranks) < 1) || e.ranks !== void 0 && a !== "skill" && a !== "talent") return;
+	let c = Ct(e.configure);
 	if (!(e.configure !== void 0 && c === void 0)) return {
 		...e.aggregate === "latest" ? { aggregate: "latest" } : {},
 		...typeof s == "string" ? { aggregateKey: s } : {},
@@ -2847,19 +2593,19 @@ function Rt(e) {
 		type: a
 	};
 }
-function zt(e) {
+function Tt(e) {
 	return !k(e) || e.status !== "resolved" || e.version !== void 0 && e.version !== 1 || !Number.isSafeInteger(e.occurrence) || Number(e.occurrence) < 1 || !k(e.rolls) || !k(e.selections) || A(e.rolls, /* @__PURE__ */ new Set()) === O || A(e.selections, /* @__PURE__ */ new Set()) === O || !Array.isArray(e.grants) ? !1 : e.acceptedBlocks === void 0 ? !0 : Array.isArray(e.acceptedBlocks) && e.acceptedBlocks.every((e) => k(e) && Object.keys(e).every((e) => e === "kind" || e === "message") && typeof e.kind == "string" && typeof e.message == "string");
 }
-function Bt(t) {
+function Et(t) {
 	let n = t.flags?.[e]?.mutationAutomation;
 	if (!k(n) || n.definitionId === "mNNavbJayRcsyeXJ") return [];
 	let r = n.state;
-	if (!k(r) || !zt(r.acquisition)) return [];
-	let i = r.acquisition.grants.map(Rt).filter((e) => e !== void 0), a = /* @__PURE__ */ new Map();
+	if (!k(r) || !Tt(r.acquisition)) return [];
+	let i = r.acquisition.grants.map(wt).filter((e) => e !== void 0), a = /* @__PURE__ */ new Map();
 	for (let e of i) a.set(e.key, (a.get(e.key) ?? 0) + 1);
 	return i.filter((e) => a.get(e.key) === 1);
 }
-function Vt(t) {
+function Dt(t) {
 	let n = t.flags?.[e]?.mutationAutomation;
 	if (!k(n)) return;
 	let r = n.state;
@@ -2869,30 +2615,30 @@ function Vt(t) {
 	let a = i.occurrence;
 	return Number.isSafeInteger(a) && Number(a) > 0 ? Number(a) : void 0;
 }
-function Ht(t) {
+function Ot(t) {
 	let n = t.flags?.[e]?.mutationAutomation;
-	if (!k(n) || n.definitionId !== Pt) return;
+	if (!k(n) || n.definitionId !== bt) return;
 	let r = n.state;
 	if (!k(r)) return;
 	let i = r.acquisition;
 	if (!k(i) || i.status !== "resolved") return;
 	let a = i.selections;
 	if (!k(a) || typeof a.tail != "string") return;
-	let o = Ft[a.tail];
+	let o = xt[a.tail];
 	if (!o) return;
 	let [s, c] = o;
 	return {
 		key: `mutation-action:${s}`,
 		name: c,
-		sourceUuid: `Compendium.${e}.ratter-11-items.Item.${E[s]}`,
+		sourceUuid: `Compendium.${e}.ratter-11-items.Item.${T[s]}`,
 		stack: "singleton",
 		type: "trait"
 	};
 }
-function Ut(e, t = []) {
-	let n = t.map(Rt).filter((e) => e !== void 0), r = new Map(n.map((e) => [e.key, e])), i = Ht(e);
+function kt(e, t = []) {
+	let n = t.map(wt).filter((e) => e !== void 0), r = new Map(n.map((e) => [e.key, e])), i = Ot(e);
 	i && r.set(i.key, i);
-	for (let t of Bt(e)) {
+	for (let t of Et(e)) {
 		let e = r.get(t.key), n = e?.stack === "configuration" && t.stack === "configuration";
 		r.set(t.key, {
 			...t,
@@ -2907,97 +2653,97 @@ function Ut(e, t = []) {
 function j(e) {
 	return Array.from(e.items);
 }
-function Wt(e) {
+function At(e) {
 	if (typeof e != "object" || !e) return !1;
 	let t = e;
 	return typeof t.createEmbeddedDocuments == "function" && typeof t.deleteEmbeddedDocuments == "function" && t.items !== void 0;
 }
-function Gt(e) {
+function jt(e) {
 	if (typeof e != "object" || !e) return !1;
 	let t = e;
 	return typeof t.name == "string" && typeof t.type == "string" && typeof t.toObject == "function";
 }
-function Kt(t) {
+function Mt(t) {
 	let n = t.flags?.[e]?.mutationAutomation;
 	if (typeof n != "object" || !n) return;
 	let r = n;
 	if (!(typeof r.definitionId != "string" || typeof r.version != "number" || r.grants !== void 0 && !Array.isArray(r.grants))) return n;
 }
-function qt(t) {
+function Nt(t) {
 	return t.getFlag(e, o) === !0;
 }
-function Jt(e) {
-	return qt(e) || e.getFlag("fvtt-wfrp-ratter", "mutantsHandbookRetired") === !0;
+function Pt(e) {
+	return Nt(e) || e.getFlag("fvtt-wfrp-ratter", "mutantsHandbookRetired") === !0;
 }
-function Yt(e, t, n) {
-	return j(e).filter((e) => e.type === "mutation" && !Jt(e) && Kt(e)?.definitionId === n).sort((e, t) => e.id.localeCompare(t.id))[0]?.id === t.id;
+function Ft(e, t, n) {
+	return j(e).filter((e) => e.type === "mutation" && !Pt(e) && Mt(e)?.definitionId === n).sort((e, t) => e.id.localeCompare(t.id))[0]?.id === t.id;
 }
-async function Xt(e, t, n) {
+async function It(e, t, n) {
 	t.update ? await t.update(n) : await e.updateEmbeddedDocuments("Item", [{
 		_id: t.id,
 		...n
 	}]);
 }
-function Zt(e, t, n, r) {
-	let i = w(e), a = T(e).map((e) => ({
+function Lt(e, t, n, r) {
+	let i = C(e), a = w(e).map((e) => ({
 		grantKey: "legacy",
 		ownerId: e
 	})), o = [...i?.owners ?? a];
 	return o.some((e) => e.ownerId === r.ownerId && e.grantKey === r.grantKey) || o.push(r), {
-		managed: i?.managed ?? ut(e),
+		managed: i?.managed ?? Ze(e),
 		owners: o,
 		signature: n,
 		sourceUuid: t.sourceUuid,
 		version: 2
 	};
 }
-function Qt(e, t, n, r, i) {
-	let a = j(e).filter((e) => ct(e, t, n)).sort((e, t) => e.id.localeCompare(t.id)), o = a.find((e) => {
-		let t = w(e);
+function Rt(e, t, n, r, i) {
+	let a = j(e).filter((e) => Ye(e, t, n)).sort((e, t) => e.id.localeCompare(t.id)), o = a.find((e) => {
+		let t = C(e);
 		return t?.signature === r && t.owners.some((e) => e.ownerId === i.ownerId && e.grantKey === i.grantKey);
 	});
-	return (n.stack ?? "singleton") === "rank" ? o ?? a.find((e) => T(e).includes(i.ownerId)) : a.filter((e) => {
-		let t = w(e);
-		return t?.signature === r || !t && T(e).length === 0 && (n.type === "skill" || lt(e, n.sourceUuid));
-	}).sort((e, t) => (w(e)?.managed === !0) - +(w(t)?.managed === !0) || e.id.localeCompare(t.id))[0] || a.find((e) => T(e).includes(i.ownerId)) || a.find((e) => {
-		let t = w(e);
-		return t?.signature === r || !t && T(e).length === 0 && lt(e, n.sourceUuid);
+	return (n.stack ?? "singleton") === "rank" ? o ?? a.find((e) => w(e).includes(i.ownerId)) : a.filter((e) => {
+		let t = C(e);
+		return t?.signature === r || !t && w(e).length === 0 && (n.type === "skill" || Xe(e, n.sourceUuid));
+	}).sort((e, t) => (C(e)?.managed === !0) - +(C(t)?.managed === !0) || e.id.localeCompare(t.id))[0] || a.find((e) => w(e).includes(i.ownerId)) || a.find((e) => {
+		let t = C(e);
+		return t?.signature === r || !t && w(e).length === 0 && Xe(e, n.sourceUuid);
 	});
 }
 //#endregion
 //#region src/module/wfrp4e/mutants-handbook/automation/grant-reconciliation/owner-cleanup.ts
-async function $t(t, n, r) {
+async function zt(t, n, r) {
 	let i = [];
 	for (let a of j(t)) {
-		let o = w(a), s = T(a), c = (o?.owners ?? []).filter((e) => {
+		let o = C(a), s = w(a), c = (o?.owners ?? []).filter((e) => {
 			if (e.ownerId !== n) return !0;
 			let t = r.get(e.grantKey);
 			return t !== void 0 && t.signature === o?.signature && (t.itemId === void 0 || t.itemId === a.id);
 		}), l = [...r.values()], u = l.some((e) => e.itemId === a.id), d = l.some((e) => e.itemId === void 0), f = s.filter((e) => e !== n || u || d);
 		if (!(c.length !== (o?.owners.length ?? 0) || f.length !== s.length)) continue;
-		if ((o?.managed ?? ut(a)) && c.length === 0 && f.length === 0 && !dt(a)) {
+		if ((o?.managed ?? Ze(a)) && c.length === 0 && f.length === 0 && !Qe(a)) {
 			i.push(a.id);
 			continue;
 		}
 		let p = {};
-		f.length > 0 ? (p[`flags.${e}.mutationGrantOwners`] = f, ut(a) && (p[`flags.${e}.mutationGrantManaged`] = !0)) : (p[`flags.${e}.-=mutationGrantManaged`] = null, p[`flags.${e}.-=mutationGrantOwners`] = null), o && c.length > 0 ? p[`flags.${e}.mutationGrant`] = {
+		f.length > 0 ? (p[`flags.${e}.mutationGrantOwners`] = f, Ze(a) && (p[`flags.${e}.mutationGrantManaged`] = !0)) : (p[`flags.${e}.-=mutationGrantManaged`] = null, p[`flags.${e}.-=mutationGrantOwners`] = null), o && c.length > 0 ? p[`flags.${e}.mutationGrant`] = {
 			...o,
 			owners: c
-		} : o && (p[`flags.${e}.-=mutationGrant`] = null), await Xt(t, a, p);
+		} : o && (p[`flags.${e}.-=mutationGrant`] = null), await It(t, a, p);
 	}
 	i.length > 0 && await t.deleteEmbeddedDocuments("Item", i);
 }
 //#endregion
 //#region src/module/wfrp4e/mutants-handbook/automation/ranked-skill-items.ts
-function en(e) {
+function Bt(e) {
 	return Array.from(e.items);
 }
-function tn(e) {
+function Vt(e) {
 	if (typeof e != "object" || !e) return !1;
 	let t = e;
 	return typeof t.name == "string" && typeof t.type == "string" && typeof t.toObject == "function";
 }
-function nn(e) {
+function Ht(e) {
 	let t = e.toObject().system;
 	if (typeof t != "object" || !t) return 0;
 	let n = t.advances;
@@ -3005,13 +2751,13 @@ function nn(e) {
 	let r = Number(n.value);
 	return Number.isFinite(r) ? r : 0;
 }
-function rn(e) {
-	let t = dt(e);
+function Ut(e) {
+	let t = Qe(e);
 	if (t) return {
 		...t,
 		legacy: !1
 	};
-	let n = w(e);
+	let n = C(e);
 	if (!n) return;
 	let r;
 	try {
@@ -3037,35 +2783,35 @@ function rn(e) {
 		owners: o
 	};
 }
-function an(e, t) {
-	let n = nn(e), r = rn(e);
+function Wt(e, t) {
+	let n = Ht(e), r = Ut(e);
 	if (!r) return Math.max(0, n);
 	let i = r.legacy && t !== void 0 ? Math.max(r.appliedRanks, Math.min(t, n)) : r.appliedRanks;
 	return Math.max(0, n - i);
 }
-function on(e) {
-	return rn(e)?.managed === !0;
+function Gt(e) {
+	return Ut(e)?.managed === !0;
 }
-function sn(e, t) {
+function Kt(e, t) {
 	let n = typeof e.system == "object" && e.system !== null ? e.system : {};
 	e.system = n;
 	let r = n.advances, i = typeof r == "object" && r ? r : {};
 	n.advances = i, i.value = t;
 }
-function cn(t, n) {
+function qt(t, n) {
 	let r = typeof t.flags == "object" && t.flags !== null ? t.flags : {};
 	t.flags = r;
 	let i = typeof r["fvtt-wfrp-ratter"] == "object" && r["fvtt-wfrp-ratter"] !== null ? r[e] : {};
 	r[e] = i, i.mutationSkillGrant = n;
 }
-async function ln(e, t, n) {
+async function Jt(e, t, n) {
 	let r = { skipExperienceChecks: !0 };
 	t.update ? await t.update(n, r) : await e.updateEmbeddedDocuments("Item", [{
 		_id: t.id,
 		...n
 	}], r);
 }
-function un(t) {
+function Yt(t) {
 	return {
 		"system.advances.value": t,
 		[`flags.${e}.-=mutationSkillGrant`]: null
@@ -3073,10 +2819,10 @@ function un(t) {
 }
 //#endregion
 //#region src/module/wfrp4e/mutants-handbook/automation/grant-reconciliation/ranked-grant-data.ts
-function dn(e) {
+function Xt(e) {
 	if (e.type !== "talent") return;
-	let t = w(e);
-	if (!t || !it(t.signature)) return;
+	let t = C(e);
+	if (!t || !Ge(t.signature)) return;
 	let n = 0;
 	try {
 		n = Number(JSON.parse(t.signature).ranks);
@@ -3096,46 +2842,46 @@ function dn(e) {
 	};
 }
 function M(e) {
-	return rn(e) ?? dn(e);
+	return Ut(e) ?? Xt(e);
 }
-function fn(e, t) {
-	let n = dn(e);
-	if (!n) return an(e, t);
+function Zt(e, t) {
+	let n = Xt(e);
+	if (!n) return Wt(e, t);
 	let r = e.toObject().system, i = Number(r?.advances?.value ?? 0), a = t === void 0 ? n.appliedRanks : Math.max(n.appliedRanks, Math.min(t, i));
 	return Math.max(0, i - a);
 }
-function pn(e) {
+function Qt(e) {
 	let t = M(e);
 	return t?.managed === !1 ? 0 : t ? 2 : 1;
 }
-function mn(e, t) {
-	return M(e)?.owners.some((e) => it(e.signature) === t) ?? !1;
+function $t(e, t) {
+	return M(e)?.owners.some((e) => Ge(e.signature) === t) ?? !1;
 }
 //#endregion
 //#region src/module/wfrp4e/mutants-handbook/automation/skill-grant-reconciliation.ts
 function N(e, t) {
 	return e < t ? -1 : +(e > t);
 }
-function hn(e, t) {
+function en(e, t) {
 	let n = { ...t.grant };
-	return delete n.ranks, ct(e, { name: t.name }, n);
+	return delete n.ranks, Ye(e, { name: t.name }, n);
 }
-async function gn(e, t) {
+async function tn(e, t) {
 	let n = /* @__PURE__ */ new Map();
 	return await Promise.all(t.map(async ({ grant: t, mutation: r }) => {
 		if (t.type !== "skill" && t.type !== "talent") return;
-		let i = rt(t);
+		let i = We(t);
 		if (t.configure?.name || n.has(i)) return;
-		let a = nt(t), o = en(e).find((e) => e.type === t.type && M(e)?.owners.some((e) => e.sourceUuid === t.sourceUuid && (e.ownerId === r.id && e.grantKey === t.key || e.signature === a)));
+		let a = S(t), o = Bt(e).find((e) => e.type === t.type && M(e)?.owners.some((e) => e.sourceUuid === t.sourceUuid && (e.ownerId === r.id && e.grantKey === t.key || e.signature === a)));
 		if (o) {
 			n.set(i, o.name);
 			return;
 		}
 		let s = await fromUuid(t.sourceUuid);
-		tn(s) && s.type === t.type && n.set(i, s.name);
+		Vt(s) && s.type === t.type && n.set(i, s.name);
 	})), t.flatMap(({ grant: e, mutation: t }) => {
 		if (e.type !== "skill" && e.type !== "talent") return [];
-		let r = rt(e);
+		let r = We(e);
 		return [{
 			grant: e,
 			grantKey: e.key,
@@ -3144,12 +2890,12 @@ async function gn(e, t) {
 			name: e.configure?.name ?? n.get(r) ?? e.name,
 			ownerId: t.id,
 			ranks: e.ranks ?? 1,
-			signature: nt(e),
+			signature: S(e),
 			sourceUuid: e.sourceUuid
 		}];
 	});
 }
-function _n(e) {
+function nn(e) {
 	return e.map(({ grantKey: e, ownerId: t, ranks: n, signature: r, sourceUuid: i }) => ({
 		grantKey: e,
 		ownerId: t,
@@ -3158,16 +2904,16 @@ function _n(e) {
 		sourceUuid: i
 	}));
 }
-async function vn(e, t) {
+async function rn(e, t) {
 	let n = t[0];
 	if (!n) return;
 	let r = await fromUuid(n.sourceUuid);
-	if (!tn(r) || r.type !== n.grant.type) {
+	if (!Vt(r) || r.type !== n.grant.type) {
 		ui.notifications.warn(`${n.mutationName}: could not grant ${n.name}. Enable its source module and reconcile mutation automation.`);
 		return;
 	}
-	let i = st(r.toObject(), n.grant);
-	if (delete i._id, delete i._key, sn(i, 0), cn(i, {
+	let i = Je(r.toObject(), n.grant);
+	if (delete i._id, delete i._key, Kt(i, 0), qt(i, {
 		appliedRanks: 0,
 		managed: !0,
 		owners: [],
@@ -3175,69 +2921,69 @@ async function vn(e, t) {
 	}), !(await e.createEmbeddedDocuments("Item", [i], {
 		skipExperienceChecks: !0,
 		skipSpecialisationChoice: !0
-	})).find(tn) && !en(e).some((e) => hn(e, n))) throw Error(`${n.mutationName}: Foundry prevented the ${n.name} grant.`);
-	await bn(e, n.identity, t, !1);
+	})).find(Vt) && !Bt(e).some((e) => en(e, n))) throw Error(`${n.mutationName}: Foundry prevented the ${n.name} grant.`);
+	await on(e, n.identity, t, !1);
 }
-async function yn(e, t) {
+async function an(e, t) {
 	let n = [];
 	for (let r of t) {
 		let t = M(r);
 		if (!t) continue;
-		let i = fn(r);
-		t.managed && i === 0 && !w(r) ? n.push(r.id) : await ln(e, r, un(i));
+		let i = Zt(r);
+		t.managed && i === 0 && !C(r) ? n.push(r.id) : await Jt(e, r, Yt(i));
 	}
 	n.length > 0 && await e.deleteEmbeddedDocuments("Item", n);
 }
-async function bn(t, n, r, i = !0) {
-	let a = r[0], o = en(t).filter((e) => a ? hn(e, a) : mn(e, n)).sort((e, t) => pn(e) - pn(t) || N(e.id, t.id));
+async function on(t, n, r, i = !0) {
+	let a = r[0], o = Bt(t).filter((e) => a ? en(e, a) : $t(e, n)).sort((e, t) => Qt(e) - Qt(t) || N(e.id, t.id));
 	if (r.length === 0) {
-		await yn(t, o);
+		await an(t, o);
 		return;
 	}
 	let s = o[0];
 	if (!s) {
 		if (!i) throw Error(`${a?.name ?? "Ranked Item"}: Foundry did not retain the mutation grant.`);
-		await vn(t, r);
+		await rn(t, r);
 		return;
 	}
 	let c = o.slice(1).filter((e) => M(e));
 	o.slice(1).filter((e) => !M(e)).length > 0 && ui.notifications.warn(`${a?.name}: multiple user-owned Items share this configuration. Mutation advances were applied only to ${s.name}; review the duplicates manually.`);
-	let l = r.reduce((e, t) => e + t.ranks, 0), u = fn(s, l), d = {
+	let l = r.reduce((e, t) => e + t.ranks, 0), u = Zt(s, l), d = {
 		appliedRanks: l,
-		managed: M(s)?.managed ?? w(s)?.managed ?? !1,
-		owners: _n(r),
+		managed: M(s)?.managed ?? C(s)?.managed ?? !1,
+		owners: nn(r),
 		version: 1
 	};
-	await ln(t, s, {
+	await Jt(t, s, {
 		"system.advances.value": u + l,
 		[`flags.${e}.mutationSkillGrant`]: d
 	});
 	let f = [];
 	for (let e of c) {
-		let n = fn(e);
-		(on(e) || M(e)?.managed) && n === 0 && !w(e) ? f.push(e.id) : (await ln(t, e, un(n)), n > 0 && ui.notifications.warn(`${a?.name}: retained a duplicate Item containing non-mutation advances; review the duplicate manually.`));
+		let n = Zt(e);
+		(Gt(e) || M(e)?.managed) && n === 0 && !C(e) ? f.push(e.id) : (await Jt(t, e, Yt(n)), n > 0 && ui.notifications.warn(`${a?.name}: retained a duplicate Item containing non-mutation advances; review the duplicate manually.`));
 	}
 	f.length > 0 && await t.deleteEmbeddedDocuments("Item", f);
 }
-async function xn(e, t) {
-	let n = await gn(e, t), r = /* @__PURE__ */ new Map();
+async function sn(e, t) {
+	let n = await tn(e, t), r = /* @__PURE__ */ new Map();
 	for (let e of n) {
 		let t = r.get(e.identity) ?? [];
 		t.push(e), r.set(e.identity, t);
 	}
 	let i = /* @__PURE__ */ new Set();
-	for (let t of en(e)) for (let e of M(t)?.owners ?? []) {
-		let t = it(e.signature);
+	for (let t of Bt(e)) for (let e of M(t)?.owners ?? []) {
+		let t = Ge(e.signature);
 		t && i.add(t);
 	}
-	for (let t of [...i].filter((e) => !r.has(e)).sort(N)) await bn(e, t, []);
-	for (let t of [...r.keys()].sort(N)) await bn(e, t, (r.get(t) ?? []).sort((e, t) => N(e.ownerId, t.ownerId) || N(e.grantKey, t.grantKey)));
+	for (let t of [...i].filter((e) => !r.has(e)).sort(N)) await on(e, t, []);
+	for (let t of [...r.keys()].sort(N)) await on(e, t, (r.get(t) ?? []).sort((e, t) => N(e.ownerId, t.ownerId) || N(e.grantKey, t.grantKey)));
 }
 //#endregion
 //#region src/module/wfrp4e/mutants-handbook/automation/grant-reconciliation.ts
-var Sn = /* @__PURE__ */ new Map();
-async function Cn(t, n, r, i, a) {
-	let o = st(n.toObject(), r);
+var cn = /* @__PURE__ */ new Map();
+async function ln(t, n, r, i, a) {
+	let o = Je(n.toObject(), r);
 	delete o._id, delete o._key;
 	let s = typeof o.flags == "object" && o.flags !== null ? o.flags : {};
 	o.flags = s;
@@ -3250,22 +2996,22 @@ async function Cn(t, n, r, i, a) {
 		version: 2
 	}, (await t.createEmbeddedDocuments("Item", [o], { skipSpecialisationChoice: !0 }))[0]?.id;
 }
-async function wn(t, n, r) {
-	let i = nt(r), a = await fromUuid(r.sourceUuid);
-	if (!Gt(a) || a.type !== r.type) return ui.notifications.warn(`${n.name}: could not grant ${r.configure?.name ?? r.key}. Enable its source module and reconcile mutation automation.`), { signature: i };
+async function un(t, n, r) {
+	let i = S(r), a = await fromUuid(r.sourceUuid);
+	if (!jt(a) || a.type !== r.type) return ui.notifications.warn(`${n.name}: could not grant ${r.configure?.name ?? r.key}. Enable its source module and reconcile mutation automation.`), { signature: i };
 	let o = {
 		grantKey: r.key,
 		ownerId: n.id
-	}, s = Qt(t, a, r, i, o);
+	}, s = Rt(t, a, r, i, o);
 	if (!s) {
-		let e = await Cn(t, a, r, i, o);
+		let e = await ln(t, a, r, i, o);
 		return e ? {
 			itemId: e,
 			signature: i
 		} : { signature: i };
 	}
-	let c = Zt(s, r, i, o), l = s.flags?.["fvtt-wfrp-ratter"] ?? {};
-	return JSON.stringify(w(s)) === JSON.stringify(c) && !("mutationGrantManaged" in l) && !("mutationGrantOwners" in l) || await Xt(t, s, {
+	let c = Lt(s, r, i, o), l = s.flags?.["fvtt-wfrp-ratter"] ?? {};
+	return JSON.stringify(C(s)) === JSON.stringify(c) && !("mutationGrantManaged" in l) && !("mutationGrantOwners" in l) || await It(t, s, {
 		[`flags.${e}.mutationGrant`]: c,
 		[`flags.${e}.-=mutationGrantManaged`]: null,
 		[`flags.${e}.-=mutationGrantOwners`]: null
@@ -3274,14 +3020,14 @@ async function wn(t, n, r) {
 		signature: i
 	};
 }
-async function Tn(e) {
-	let t = j(e).filter((e) => e.type === "mutation" && !Jt(e)), n = [], r = /* @__PURE__ */ new Map(), i = /* @__PURE__ */ new Map(), a = /* @__PURE__ */ new Map();
+async function dn(e) {
+	let t = j(e).filter((e) => e.type === "mutation" && !Pt(e)), n = [], r = /* @__PURE__ */ new Map(), i = /* @__PURE__ */ new Map(), a = /* @__PURE__ */ new Map();
 	for (let [o, s] of t.entries()) {
-		let t = Kt(s);
+		let t = Mt(s);
 		if (!t) continue;
 		let c = (a.get(t.definitionId) ?? 0) + 1;
 		a.set(t.definitionId, c), r.set(s.id, /* @__PURE__ */ new Map());
-		for (let a of Ut(s, t.grants)) if (!(a.scope === "first" && !Yt(e, s, t.definitionId))) if ((a.type === "skill" || a.type === "talent") && a.stack === "rank") n.push({
+		for (let a of kt(s, t.grants)) if (!(a.scope === "first" && !Ft(e, s, t.definitionId))) if ((a.type === "skill" || a.type === "talent") && a.stack === "rank") n.push({
 			grant: a,
 			mutation: s
 		});
@@ -3290,349 +3036,339 @@ async function Tn(e) {
 			n.push({
 				grant: a,
 				mutation: s,
-				occurrence: Vt(s) ?? c,
+				occurrence: Dt(s) ?? c,
 				order: o
 			}), i.set(e, n);
-		} else r.get(s.id)?.set(a.key, await wn(e, s, a));
+		} else r.get(s.id)?.set(a.key, await un(e, s, a));
 	}
-	await xn(e, n);
+	await sn(e, n);
 	for (let t of i.values()) {
 		t.sort((e, t) => e.occurrence - t.occurrence || e.order - t.order);
 		let n = t.at(-1)?.grant;
-		if (n) for (let i of t) r.get(i.mutation.id)?.set(n.key, await wn(e, i.mutation, n));
+		if (n) for (let i of t) r.get(i.mutation.id)?.set(n.key, await un(e, i.mutation, n));
 	}
 	for (let n of t) {
 		let t = r.get(n.id);
-		t && await $t(e, n.id, t);
+		t && await zt(e, n.id, t);
 	}
-	let o = new Set(j(e).filter((e) => e.type === "mutation" && !Jt(e) && Kt(e) !== void 0).map((e) => e.id)), s = /* @__PURE__ */ new Set();
+	let o = new Set(j(e).filter((e) => e.type === "mutation" && !Pt(e) && Mt(e) !== void 0).map((e) => e.id)), s = /* @__PURE__ */ new Set();
 	for (let t of j(e)) {
-		for (let e of w(t)?.owners ?? []) o.has(e.ownerId) || s.add(e.ownerId);
-		for (let e of T(t)) o.has(e) || s.add(e);
+		for (let e of C(t)?.owners ?? []) o.has(e.ownerId) || s.add(e.ownerId);
+		for (let e of w(t)) o.has(e) || s.add(e);
 	}
-	for (let t of s) await $t(e, t, /* @__PURE__ */ new Map());
+	for (let t of s) await zt(e, t, /* @__PURE__ */ new Map());
 }
-async function En(e, t) {
-	let n = (Sn.get(e) ?? Promise.resolve()).catch(() => void 0).then(t);
-	Sn.set(e, n);
+async function fn(e, t) {
+	let n = (cn.get(e) ?? Promise.resolve()).catch(() => void 0).then(t);
+	cn.set(e, n);
 	try {
 		await n;
 	} finally {
-		Sn.get(e) === n && Sn.delete(e);
+		cn.get(e) === n && cn.delete(e);
 	}
 }
 async function P(e) {
 	let t = await fromUuid(e);
-	if (!Wt(t)) throw Error(`Mutation automation could not resolve Actor ${e}.`);
-	await En(e, () => Tn(t));
+	if (!At(t)) throw Error(`Mutation automation could not resolve Actor ${e}.`);
+	await fn(e, () => dn(t));
 }
-async function Dn(e, t) {
+async function pn(e, t) {
 	let n = await fromUuid(e);
-	if (!Wt(n)) throw Error(`Mutation automation could not resolve Actor ${e}.`);
-	await En(e, async () => {
-		await $t(n, t, /* @__PURE__ */ new Map()), await Tn(n);
+	if (!At(n)) throw Error(`Mutation automation could not resolve Actor ${e}.`);
+	await fn(e, async () => {
+		await zt(n, t, /* @__PURE__ */ new Map()), await dn(n);
 	});
 }
 //#endregion
 //#region src/module/wfrp4e/mutants-handbook/outcomes.ts
-var On = `flags.${e}.${r}`, kn = `flags.${e}.${i}`;
-function An(e, t) {
-	return e?.some((e) => e.kind === t.kind && e.message === t.message) === !0;
-}
-async function jn(e, t, n, r) {
-	let i = [r];
-	try {
-		await Ee(e, n);
-	} catch (e) {
-		i.push(e);
-	}
-	try {
-		await e.deleteEmbeddedDocuments("Item", [...t]);
-	} catch (e) {
-		i.push(e);
-	}
-	throw i.length > 1 ? AggregateError(i, `Failed to roll back mutation acquisition for ${e.name}.`) : r;
-}
-function Mn(e) {
+var mn = `flags.${e}.${r}`;
+function hn(e) {
 	return {
 		toughness: Number(e.system.characteristics.t.bonus),
 		willpower: Number(e.system.characteristics.wp.bonus)
 	};
 }
-function Nn(e, t) {
-	return re(t, Mn(e));
+function gn(e, t) {
+	return ae(t, hn(e));
 }
-function Pn(e) {
+function _n(e) {
 	return `${e.charAt(0).toUpperCase()}${e.slice(1)}`;
 }
-async function Fn(e, t) {
-	return Number(e.system.status.resilience.value) > 0 && await tt(e.name, t);
+async function vn(e, t) {
+	return Number(e.system.status.resilience.value) > 0 && await Ue(e.name, t);
 }
-async function In(e, t, n, r = {}) {
+async function yn(e, t, n, r = {}) {
 	let i = {
 		...r,
-		"system.status.corruption.value": ie(Number(e.system.status.corruption.value), t)
+		"system.status.corruption.value": oe(Number(e.system.status.corruption.value), t)
 	};
-	n && (i["system.status.resilience.value"] = Math.max(0, Number(e.system.status.resilience.value) - 1)), await S(e, i);
+	n && (i["system.status.resilience.value"] = Math.max(0, Number(e.system.status.resilience.value) - 1)), await h(e, i);
 }
-async function Ln(e, t) {
-	for (let n of t) {
-		let t = y("ChaosSpawn", {
-			bonus: n === "physical" ? "Toughness Bonus" : "Willpower Bonus",
-			name: e.name,
-			nature: n
-		});
-		x(t), await b(t);
-	}
-}
-async function Rn(e, t, n = {}) {
-	let r = Pe(e, t).find((e) => !An(n.acceptedBlocks, e));
-	if (r) throw Error(r.message);
-	if (await Fn(e, t.name)) {
-		let n = Nn(e, t.nature);
-		return await In(e, n, !0), await b(y("Resisted", {
-			loss: n,
-			mutation: t.name,
-			name: e.name
-		})), "applied";
-	}
-	let i = Nn(e, t.nature), a = {
-		mutationAcquisitionAcceptedBlocks: n.acceptedBlocks ?? [],
-		mutationAcquisitionCanReroll: n.canReroll === !0,
-		mutationAcquisitionHandlesChimeranRetirement: !0
-	}, o = await e.createEmbeddedDocuments("Item", [t.data], a);
-	if (o.length === 0 && a.mutationAcquisitionCancelled === !0) return a.mutationAcquisitionRerollRequested === !0 ? "reroll" : (x(`${t.name} acquisition was cancelled. Corruption was not changed.`), "cancelled");
-	if (o.length !== 1) throw o.length > 0 && await e.deleteEmbeddedDocuments("Item", o.map((e) => e.id)), Error(`Foundry did not create the ${t.name} mutation Item.`);
-	let s, c = [];
-	try {
-		t.name.trim().toLowerCase() === "chimeran curse" && (c = await Te(e)), s = oe(be(e), Mn(e)), await In(e, i, !1, s.length > 0 ? { [kn]: !0 } : {});
-	} catch (t) {
-		return jn(e, o.map((e) => e.id), c, t);
-	}
-	if (c.length > 0) try {
-		await P(e.uuid);
-	} catch (e) {
-		Be(e);
-	}
-	return await b(y("Gained", {
-		loss: i,
-		mutation: t.name,
-		name: e.name
-	})), await Ln(e, s), "applied";
-}
-async function zn(e, t) {
+async function bn(e, t) {
 	if (!game) throw Error("Foundry game global is unavailable while applying Chosen of Chaos.");
 	let n = game.i18n.localize("FVTT_WFRP_RATTER.Mutations.ChosenOutcome");
-	if (await Fn(e, n)) {
-		let r = Nn(e, t);
-		await In(e, r, !0), await b(y("Resisted", {
+	if (await vn(e, n)) {
+		let r = gn(e, t);
+		await yn(e, r, !0), await y(v("Resisted", {
 			loss: r,
 			mutation: n,
 			name: e.name
 		}));
 		return;
 	}
-	let r = await et(e.name), i = r ?? "unassigned", a = Se(e), o = Nn(e, t);
-	if (await In(e, o, !1, { [On]: i }), a && (await we(e), await P(e.uuid)), await b(y(r ? "Chosen" : "ChosenUnassigned", {
+	let r = await He(e.name), i = r ?? "unassigned", a = he(e), o = gn(e, t);
+	if (await yn(e, o, !1, { [mn]: i }), a && (await _e(e), await P(e.uuid)), await y(v(r ? "Chosen" : "ChosenUnassigned", {
 		loss: o,
 		name: e.name,
-		patron: r ? Pn(r) : "Chaos"
+		patron: r ? _n(r) : "Chaos"
 	})), a) {
-		let t = y("PossessedRemoved", { name: e.name });
-		x(t), await b(t);
+		let t = v("PossessedRemoved", { name: e.name });
+		Le(t), await y(t);
 	}
 }
 //#endregion
 //#region src/module/wfrp4e/mutants-handbook/patron-notes.ts
-var Bn = {
+var xn = {
 	khorne: "Use only Ape/Monkey, Bear, Boar/Pig, Bovine, Canine, or Goat/Sheep.",
 	nurgle: "Use only Ape/Monkey, Bear, Boar/Pig, Bovine, Deer/Elk, Goat/Sheep, Horse/Camel, Insect, Pachyderm, or Spider.",
 	slaanesh: "Use only Amphibian, Arthropod, Fish, Feline, Lizard/Snake, or Mollusca.",
 	tzeentch: "Use only Bat, Bird, Fish, Insect, Mollusca, or Spider."
-}, Vn = {
+}, Sn = {
 	khorne: "Use only Daemonic, Mechanoid, or Metal.",
 	nurgle: "Use only Daemonic, Fenbeast, or Undead.",
 	slaanesh: "Use only Daemonic or Metal.",
 	tzeentch: "Use only Daemonic or Mechanoid."
-}, Hn = {
+}, Cn = {
 	khorne: "Use only Destruction, Drugs, or Pain.",
 	nurgle: "Use only Devotion, Gluttony, or Service.",
 	slaanesh: "Use only Art, Lust, or Pain.",
 	tzeentch: "Use only Gambling, Greed, or Theft."
-}, Un = {
+}, wn = {
 	khorne: "Use only Leathery Hide, Fur, or Metal.",
 	slaanesh: "Use only Rubbery Skin, Scales, or Carapace."
-}, Wn = new Set([
+}, Tn = new Set([
 	"bestial arms",
 	"bestial body",
 	"bestial head",
 	"bestial legs",
 	"bestial limbs"
-]), Gn = new Set([
+]), En = new Set([
 	"unnatural arms",
 	"unnatural body",
 	"unnatural head",
 	"unnatural legs",
 	"unnatural limbs"
 ]);
-function Kn(e, t) {
+function Dn(e, t) {
 	let n = t.trim().toLowerCase();
-	if (Wn.has(n)) return Bn[e];
-	if (Gn.has(n)) return Vn[e];
-	if (n === "addiction") return Hn[e];
+	if (Tn.has(n)) return xn[e];
+	if (En.has(n)) return Sn[e];
+	if (n === "addiction") return Cn[e];
 	if (n === "mark of chaos") return `The mark is the Mark of ${e.charAt(0).toUpperCase()}${e.slice(1)}.`;
-	if (n === "protective skin") return Un[e];
+	if (n === "protective skin") return wn[e];
 	if (e === "khorne" && n === "prejudice") return "This automation treats Prejudice as mental for Corruption reduction and mutation limits.";
 	if (e === "nurgle" && n === "corrupted blood") return "The source attaches a mismatched footnote listing Leathery Hide, Bark, and Carapace; the GM must decide how to handle it.";
 }
 //#endregion
 //#region src/module/wfrp4e/mutants-handbook/tables.ts
-function qn(e) {
+function On(e) {
 	return typeof e == "object" && !!e && "draw" in e;
 }
-async function Jn(e) {
+async function kn(e) {
 	let t = game?.packs.get(n);
 	if (!t) throw Error(`The required compendium ${n} is unavailable.`);
 	let r = await t.getDocument(e);
-	if (!qn(r)) throw Error(`The required Mutant's Handbook table ${e} is unavailable.`);
+	if (!On(r)) throw Error(`The required Mutant's Handbook table ${e} is unavailable.`);
 	return r;
 }
-async function Yn(e, t) {
-	let n = (await (await Jn(e)).draw({
-		displayChat: !0,
+async function F(e, t, n = !0) {
+	let r = (await (await kn(e)).draw({
+		displayChat: n,
 		messageMode: "gm",
 		recursive: !0,
 		...t ? { roll: new Roll(t) } : {}
 	})).results[0];
-	if (!n) throw Error(`The Mutant's Handbook table ${e} returned no result.`);
-	return n;
+	if (!r) throw Error(`The Mutant's Handbook table ${e} returned no result.`);
+	return r;
 }
-function Xn(e) {
-	return Yn(c[e]);
+function An(e) {
+	return F(u[e]);
 }
-function Zn(e) {
-	let t = ne(e);
-	return Yn(l, t > 0 ? `1d100 + ${t}` : "1d100");
+function jn(e) {
+	let t = ie(e);
+	return F(d, t > 0 ? `1d100 + ${t}` : "1d100");
 }
-function Qn(e, t) {
-	return Yn(u[t][e]);
+function Mn(e, t) {
+	return F(f[t][e], void 0, !1);
 }
-function $n(e) {
-	return Yn(d[e]);
+function Nn(e) {
+	return F(p[e], void 0, !1);
 }
 //#endregion
 //#region src/module/wfrp4e/mutants-handbook/workflow.ts
-var er = `flags.${e}.${r}`, tr = 100;
-function nr(e) {
+var Pn = `flags.${e}.${r}`;
+function Fn(e) {
 	return `${e.charAt(0).toUpperCase()}${e.slice(1)}`;
 }
-async function rr(e, t) {
-	let n = [];
-	for (let r of Pe(e, t)) {
-		let e = await Qe(t.name, r, !0);
-		if (e !== "accept") return {
-			action: e,
-			block: r
-		};
-		n.push(r);
-	}
-	return {
-		action: "accept",
-		acceptedBlocks: n
-	};
-}
-async function ir(e, t) {
+async function In(e, t) {
 	if (t !== "unassigned") return t;
-	let n = await et(e.name);
+	let n = await He(e.name);
 	if (!n) {
-		x(y("PatronRequired", { name: e.name }));
+		Le(v("PatronRequired", { name: e.name }));
 		return;
 	}
-	return await S(e, { [er]: n }), n;
+	return await h(e, { [Pn]: n }), n;
 }
-async function ar(e, t) {
-	let n = await ir(e, t);
-	if (!n) return;
-	let r;
-	for (let t = 0; t < tr; t += 1) {
-		let t = await ze(await $n(n), n), i = await rr(e, t);
-		if (i.action === "cancel") return;
-		if (i.action === "reroll") {
-			x(`${i.block.message} Rerolling on the ${nr(n)} mutation table.`);
-			continue;
-		}
-		if (i.action !== "accept") continue;
-		let a = await Rn(e, t, {
-			acceptedBlocks: i.acceptedBlocks,
-			canReroll: !0
-		});
-		if (a !== "reroll") {
-			if (a === "cancelled") return;
-			r = t;
-			break;
-		}
-	}
-	if (!r) throw Error("No eligible patron mutation could be drawn after 100 attempts.");
-	let i = Kn(n, r.name);
-	i && await b(y("PatronRestriction", {
+async function Ln(e, t) {
+	let n = await In(e, t);
+	if (!n) return !1;
+	let r = await Ce(await Nn(n), n);
+	await Ie(e, r);
+	let i = Dn(n, r.name);
+	return i && await y(v("PatronRestriction", {
 		mutation: r.name,
 		note: i,
-		patron: nr(n)
-	}));
+		patron: Fn(n)
+	})), !0;
 }
-async function or(e) {
-	let t = e.system.details.species.value, n = p(t) ?? await $e(e.name, t);
-	if (!n) {
-		x(y("SpeciesRequired", { name: e.name }));
-		return;
-	}
-	let r = await Xn(n), i = ee(r.name);
+async function Rn(e) {
+	let t = e.system.details.species.value, n = te(t) ?? await Ve(e.name, t);
+	if (!n) return Le(v("SpeciesRequired", { name: e.name })), !1;
+	let r = await An(n), i = ne(r.name);
 	if (!i) throw Error(`The nature table returned an unrecognized result: ${r.name}.`);
-	let a = await Zn(be(e).total), o = te(a.name);
+	let a = await jn(pe(e).total), o = re(a.name);
 	if (!o) throw Error(`The severity table returned an unrecognized result: ${a.name}.`);
-	if (o === "chosen") {
-		await zn(e, i);
-		return;
-	}
-	let s;
-	for (let t = 0; t < tr; t += 1) {
-		let t = await Qn(i, o);
-		if (!t.documentUuid && te(t.name) === "chosen") {
-			await zn(e, i);
-			return;
-		}
-		let n = await ze(t), r = await rr(e, n);
-		if (r.action === "cancel") return;
-		if (r.action === "reroll") {
-			x(`${r.block.message} Rerolling on the ${nr(o)} ${i} table.`);
-			continue;
-		}
-		if (r.action !== "accept") continue;
-		if (n.nature !== i) throw Error(`${n.name} does not match the rolled ${i} mutation table.`);
-		let a = await Rn(e, n, {
-			acceptedBlocks: r.acceptedBlocks,
-			canReroll: !0
-		});
-		if (a !== "reroll") {
-			if (a === "cancelled") return;
-			s = n;
-			break;
-		}
-	}
-	if (!s) throw Error("No eligible mutation could be drawn after 100 attempts.");
+	if (o === "chosen") return await bn(e, i), !0;
+	let s = await Mn(i, o);
+	if (!s.documentUuid && re(s.name) === "chosen") return await bn(e, i), !0;
+	let c = await Ce(s);
+	if (c.nature !== i) throw Error(`${c.name} does not match the rolled ${i} mutation table.`);
+	return await Ie(e, c), !0;
 }
-async function sr(e) {
-	let t = xe(e);
-	t ? await ar(e, t) : await or(e);
+async function zn(e) {
+	let t = me(e);
+	return t ? Ln(e, t) : Rn(e);
+}
+//#endregion
+//#region src/module/wfrp4e/mutants-handbook/corruption-chat.ts
+var Bn = "mutantsHandbookCorruptionFlow", Vn = /* @__PURE__ */ new Set(), Hn = /* @__PURE__ */ new Map();
+function I(t) {
+	let n = t.flags?.[e]?.[Bn];
+	if (typeof n != "object" || !n) return;
+	let r = n;
+	if (!(typeof r.actorUuid != "string" || r.status !== "complete" && r.status !== "pending" || r.version !== 1)) return r;
+}
+async function L(t, n) {
+	if (typeof t.setFlag != "function") throw Error("Foundry cannot store the Mutant's Handbook chat-card state.");
+	await t.setFlag(e, Bn, n);
+}
+async function Un(e, t) {
+	let n = t.context.messageId, r = n ? game?.messages.get(n) : void 0;
+	if (!n || !r) throw Error("The Endurance Test did not create a chat message to continue from.");
+	let i = r.system.test?.failed ?? t.failed;
+	if (await L(r, {
+		actorUuid: e.uuid,
+		status: i ? "pending" : "complete",
+		version: 1
+	}), i) try {
+		await Ae(e, n);
+	} catch (e) {
+		throw await L(r, null), e;
+	}
+}
+async function Wn(e) {
+	let t = I(e), n = e.id;
+	if (!t || t.status !== "pending" || !n || Vn.has(n)) return !1;
+	Vn.add(n);
+	try {
+		let r = await fromUuid(t.actorUuid);
+		if (!fe(r)) throw Error(`${t.actorUuid} no longer resolves to a WFRP4e character Actor.`);
+		let i = _(r);
+		if (i?.kind !== "test" || i.messageId !== n) throw Error(`${r.name} is no longer waiting on this Corruption Test.`);
+		let a = e.system.test;
+		if (!a) throw Error("The Corruption Test chat message no longer contains its WFRP Test data.");
+		if (a.failed) {
+			if (!await zn(r)) return !1;
+			let e = _(r);
+			e?.kind === "test" && e.messageId === n && await je(r);
+		} else await je(r);
+		return await L(e, {
+			...t,
+			status: "complete"
+		}), !0;
+	} finally {
+		Vn.delete(n);
+	}
+}
+async function Gn(e) {
+	let t = e.system.test?.context.previousMessage;
+	if (!t || !e.id) return !1;
+	let n = game?.messages.get(t), r = n ? I(n) : void 0;
+	if (!n || !r || r.status !== "pending") return !1;
+	let i = await fromUuid(r.actorUuid);
+	if (!fe(i)) throw Error(`${r.actorUuid} no longer resolves to a WFRP4e character Actor.`);
+	let a = e.system.test?.failed;
+	if (typeof a != "boolean") return !1;
+	await L(e, {
+		actorUuid: r.actorUuid,
+		status: a ? "pending" : "complete",
+		version: 1
+	});
+	let o = _(i);
+	return o?.kind === "test" && o.messageId === t && (a ? await Ae(i, e.id) : await je(i)), typeof n.delete == "function" ? await n.delete() : await L(n, null), !0;
+}
+async function Kn(e) {
+	let t = e.id;
+	if (!t) return !1;
+	let n = Hn.get(t);
+	if (n) return n;
+	let r = Gn(e).finally(() => {
+		Hn.delete(t);
+	});
+	return Hn.set(t, r), r;
+}
+function qn(e) {
+	return game?.user.isGM === !0 || e.isAuthor === !0;
+}
+function Jn(e, t) {
+	let n = I(e);
+	if (!n || e.system.test?.failed !== !1) return !1;
+	if (!t.querySelector("[data-ratter-corruption-result=\"success\"]")) {
+		let e = document.createElement("p");
+		e.dataset.ratterCorruptionResult = "success", e.textContent = game.i18n.localize("FVTT_WFRP_RATTER.Mutations.CorruptionHeld"), (t.querySelector(".message-content") ?? t).append(e);
+	}
+	return n.status === "pending" && Wn(e).catch(b), !0;
+}
+function Yn(e, t) {
+	let n = I(e);
+	if (Jn(e, t) || !n || n.status !== "pending" || e.system.test?.failed !== !0 || !qn(e) || t.querySelector("[data-ratter-action=\"continue-corruption\"]")) return;
+	let r = document.createElement("button");
+	r.type = "button", r.classList.add("chat-button"), r.dataset.ratterAction = "continue-corruption", r.innerHTML = `<i class="fa-solid fa-forward"></i> ${game.i18n.localize("FVTT_WFRP_RATTER.Mutations.ContinueCorruption")}`, r.addEventListener("click", async () => {
+		r.disabled = !0;
+		try {
+			await Wn(e) || (r.disabled = !1);
+		} catch (e) {
+			r.disabled = !1, b(e);
+		}
+	}), (t.querySelector(".message-content") ?? t).append(r);
+}
+function Xn() {
+	Hooks.on("createChatMessage", (e) => {
+		Kn(e).catch(b);
+	}), Hooks.on("renderChatMessageHTML", (e, t) => {
+		if (typeof t != "object" || !t || !(t instanceof HTMLElement)) return;
+		let n = e;
+		Yn(n, t), !I(n) && n.system.test?.context.previousMessage && Kn(n).then(() => Yn(n, t)).catch(b);
+	});
 }
 //#endregion
 //#region src/module/wfrp4e/mutants-handbook/check.ts
-var cr = /* @__PURE__ */ new Set();
-async function lr(e) {
+var Zn = /* @__PURE__ */ new Set();
+async function Qn(e) {
 	let t = e.system.status.corruption;
-	if (!(Number(t.value) <= Number(t.max) || cr.has(e.uuid) || Ce(e))) {
+	if (!(Number(t.value) <= Number(t.max) || Zn.has(e.uuid) || ke(e) || ge(e))) {
 		if (!game) throw Error("Foundry game global is unavailable during a corruption check.");
-		cr.add(e.uuid);
+		Zn.add(e.uuid);
 		try {
 			let t = game.i18n.localize("NAME.Endurance"), n = {
 				fields: { difficulty: "challenging" },
@@ -3641,968 +3377,99 @@ async function lr(e) {
 				title: game.i18n.format("DIALOG.MutateTitle", { test: t })
 			}, r = e.has(t, "skill"), i = r ? await e.setupSkill(r, n) : await e.setupCharacteristic("t", n);
 			if (!i) return;
-			await i.roll(), await qe(e, i) ? await b(game.i18n.localize("CHAT.MutateSuccess")) : await sr(e);
+			await i.roll(), await Un(e, i);
 		} finally {
-			cr.delete(e.uuid);
+			Zn.delete(e.uuid);
 		}
 	}
 }
-async function ur(e) {
+async function $n(e) {
 	let t = await fromUuid(e);
-	if (!ye(t)) throw Error(`${e} does not resolve to a WFRP4e character Actor.`);
-	await lr(t);
-}
-//#endregion
-//#region src/module/wfrp4e/mutants-handbook/acquisition/values.ts
-function F(e, t, n) {
-	let r = e[t];
-	return Array.isArray(r) ? r[n] : n === 0 ? r : void 0;
-}
-function dr(e, t, n) {
-	let r = /* @__PURE__ */ new Set();
-	for (let t of n) {
-		let n = t.selections[e];
-		for (let e of Array.isArray(n) ? n : n === void 0 ? [] : [n]) r.add(e);
-	}
-	return t.filter((e) => !r.has(e.id));
-}
-function fr(e, t, n, r) {
-	let i = e[t], a = Array.isArray(i) ? [...i] : i === void 0 ? [] : [i];
-	a[n] = r, e[t] = a.length === 1 ? a[0] : a;
-}
-function pr(e, t) {
-	let n = e;
-	for (let e of t) {
-		if (typeof n != "object" || !n) return;
-		n = n[e];
-	}
-	return n;
-}
-function mr(e, t, n) {
-	return pr({
-		...n,
-		acquisition: {
-			occurrence: t.occurrence,
-			rolls: t.rolls,
-			selections: t.selections
-		},
-		occurrence: t.occurrence,
-		rolls: t.rolls,
-		selections: t.selections
-	}, e.key.split(".")) ?? t.selections[e.key] ?? t.rolls[e.key];
-}
-function hr(e, t) {
-	return Array.isArray(e) || Array.isArray(t) ? JSON.stringify(e) === JSON.stringify(t) : e === t;
-}
-function gr(e, t, n) {
-	return (e ?? []).every((e) => {
-		let r = mr(e, t, n), i = e.value;
-		switch (e.operator) {
-			case "equals": return hr(r, i);
-			case "notEquals": return !hr(r, i);
-			case "exists": return r != null;
-			case "notExists": return r == null;
-			case "includes": return (Array.isArray(r) || typeof r == "string") && r.includes(i);
-			case "notIncludes": return !((Array.isArray(r) || typeof r == "string") && r.includes(i));
-			case "lt": return typeof r == "number" && typeof i == "number" && r < i;
-			case "lte": return typeof r == "number" && typeof i == "number" && r <= i;
-			case "gt": return typeof r == "number" && typeof i == "number" && r > i;
-			case "gte": return typeof r == "number" && typeof i == "number" && r >= i;
-			case "sumEquals": {
-				let e = (Array.isArray(r) ? r : r === void 0 ? [] : [r]).map(Number);
-				return typeof i == "number" && e.length > 0 && e.every(Number.isFinite) && e.reduce((e, t) => e + t, 0) === i;
-			}
-		}
-	});
-}
-function _r(e) {
-	let { ranks: t, ...n } = e;
-	return n;
-}
-function vr(e, t) {
-	let n = e.findIndex((e) => e.key === t.key && e.aggregateKey === t.aggregateKey);
-	if (n < 0) {
-		e.push({ ...t });
-		return;
-	}
-	let r = e[n];
-	if (t.aggregate === "latest") {
-		e[n] = { ...t };
-		return;
-	}
-	if (JSON.stringify(_r(r)) !== JSON.stringify(_r(t))) throw Error(`Acquisition grants reuse the incompatible key ${t.key}.`);
-	t.stack === "rank" && (e[n] = {
-		...r,
-		ranks: (r.ranks ?? 1) + (t.ranks ?? 1)
-	});
-}
-function yr(e, t) {
-	let n = e.findIndex((e) => e.key === t.key);
-	if (n < 0) {
-		e.push({ ...t });
-		return;
-	}
-	if (JSON.stringify(e[n]) !== JSON.stringify(t)) throw Error(`Acquisition modifiers reuse the incompatible key ${t.key}.`);
-}
-function br(e, t) {
-	return {
-		acceptedBlocks: [...e?.acceptedBlocks ?? []],
-		grants: [],
-		modifiers: [],
-		occurrence: t,
-		rolls: Object.fromEntries(Object.entries(e?.rolls ?? {}).map(([e, t]) => [e, Array.isArray(t) ? [...t] : t])),
-		selections: Object.fromEntries(Object.entries(e?.selections ?? {}).map(([e, t]) => [e, Array.isArray(t) ? [...t] : t])),
-		status: "pending",
-		version: 1
-	};
-}
-function xr(e) {
-	let t = new Set(e.modifiers.map((e) => e.key));
-	return Object.fromEntries(Object.entries(e.rolls).filter(([e, n]) => t.has(e) && typeof n == "number" && Number.isFinite(n)));
-}
-//#endregion
-//#region src/module/wfrp4e/mutants-handbook/acquisition/materialize.ts
-function Sr(e, t, n) {
-	let { roll: r, ...i } = e;
-	return {
-		...i,
-		key: t,
-		...n === void 0 ? {} : { value: n }
-	};
-}
-function Cr(e, t, n) {
-	let r = (r) => r.replaceAll(/{{([^{}]+)}}/g, (r, i) => {
-		let a = F(t.selections, i.trim(), n);
-		if (a === void 0) throw Error(`Acquisition grant ${e.key} has an unresolved {{${i}}} placeholder.`);
-		return a;
-	}), i = e.configure?.nameTemplate, a = e.aggregateKeyTemplate;
-	if (!i && !a) return e;
-	let { aggregateKeyTemplate: o, ...s } = e, { nameTemplate: c, ...l } = e.configure ?? {};
-	return {
-		...s,
-		...a ? { aggregateKey: r(a) } : {},
-		...e.configure ? { configure: {
-			...l,
-			...i ? { name: r(i) } : {}
-		} } : {}
-	};
-}
-async function wr(e, t, n, r) {
-	for (let t of r.grants ?? []) vr(e.state.grants, Cr(t, e.state, n));
-	for (let i of r.modifiers ?? []) {
-		let r = `${t.key}:${e.state.occurrence}:${n + 1}:${i.key}`, a = "roll" in i ? i.roll : void 0, o = e.state.rolls[r];
-		if (Array.isArray(o) && (o = o[0]), a && (typeof o != "number" || !Number.isFinite(o))) {
-			let n = await e.services.roll(a, `${e.mutationName}: ${t.prompt}`);
-			o = n.total, e.state.rolls[r] = o, n.announce && e.announcements.push(n.announce);
-		}
-		if (a && (typeof o != "number" || !Number.isFinite(o))) throw Error(`The acquisition modifier ${i.key} did not resolve a roll.`);
-		let s = Sr(i, r, a ? o : void 0);
-		yr(e.state.modifiers, s), a && typeof o == "number" && (e.topLevelRolls[r] = o);
-	}
-}
-//#endregion
-//#region src/module/wfrp4e/mutants-handbook/acquisition/signals.ts
-var Tr = Symbol("acquisition-cancelled"), Er = {
-	depth: 8,
-	resolutions: 32,
-	tableRolls: 20
-}, Dr = class {
-	block;
-	constructor(e) {
-		this.block = e;
-	}
-};
-function Or(e, t, n, r) {
-	return {
-		kind: n,
-		message: `${e}: ${t} ${r}.`
-	};
-}
-//#endregion
-//#region src/module/wfrp4e/mutants-handbook/acquisition/state.ts
-function I(e) {
-	return typeof e == "object" && !!e && !Array.isArray(e);
-}
-var kr = new Set([
-	"ag",
-	"bs",
-	"dex",
-	"fel",
-	"i",
-	"int",
-	"s",
-	"t",
-	"wp",
-	"ws"
-]), Ar = new Set([
-	"ceil",
-	"floor",
-	"round"
-]);
-function L(e, t) {
-	let n = new Set(t);
-	return Object.keys(e).every((e) => n.has(e));
-}
-function jr(e) {
-	return typeof e == "string" && e.trim().length > 0 && e.length <= 256;
-}
-function R(e) {
-	return typeof e == "number" && Number.isFinite(e);
-}
-function Mr(e) {
-	return typeof e == "string" && kr.has(e);
-}
-function Nr(e) {
-	return e === void 0 || e === "first";
-}
-function Pr(e) {
-	let t = e.roll;
-	return (typeof t == "string" && t.trim().length > 0) !== R(e.value);
-}
-function Fr(e) {
-	return e === void 0 || Array.isArray(e) && e.every((e) => typeof e == "string" && e.trim().length > 0);
-}
-function Ir(e) {
-	return e === void 0 || Array.isArray(e) && e.every(Mr);
-}
-function Lr(e) {
-	if (!I(e) || !jr(e.key) || typeof e.kind != "string") return;
-	let t = e.key;
-	switch (e.kind) {
-		case "characteristic": return !L(e, [
-			"characteristic",
-			"key",
-			"kind",
-			"roll",
-			"scope",
-			"value"
-		]) || !Mr(e.characteristic) || !Nr(e.scope) || !Pr(e) ? void 0 : {
-			characteristic: e.characteristic,
-			key: t,
-			kind: "characteristic",
-			...typeof e.roll == "string" ? { roll: e.roll } : {},
-			...e.scope === "first" ? { scope: "first" } : {},
-			...R(e.value) ? { value: e.value } : {}
-		};
-		case "characteristicCap": return !L(e, [
-			"characteristic",
-			"key",
-			"kind",
-			"maximum"
-		]) || !Mr(e.characteristic) || !R(e.maximum) || e.maximum < 0 ? void 0 : {
-			characteristic: e.characteristic,
-			key: t,
-			kind: "characteristicCap",
-			maximum: e.maximum
-		};
-		case "move":
-		case "status": return !L(e, [
-			"key",
-			"kind",
-			"scope",
-			"value"
-		]) || !Nr(e.scope) || !R(e.value) ? void 0 : {
-			key: t,
-			kind: e.kind,
-			...e.scope === "first" ? { scope: "first" } : {},
-			value: e.value
-		};
-		case "moveMultiplier": return !L(e, [
-			"key",
-			"kind",
-			"round",
-			"value"
-		]) || typeof e.round != "string" || !Ar.has(e.round) || !R(e.value) ? void 0 : {
-			key: t,
-			kind: "moveMultiplier",
-			round: e.round,
-			value: e.value
-		};
-		case "sizeStep": return !L(e, [
-			"direction",
-			"key",
-			"kind"
-		]) || e.direction !== -1 && e.direction !== 1 ? void 0 : {
-			direction: e.direction,
-			key: t,
-			kind: "sizeStep"
-		};
-		case "test": {
-			let n = e.skills, r = e.characteristics;
-			return !L(e, [
-				"characteristics",
-				"key",
-				"kind",
-				"roll",
-				"skills",
-				"value"
-			]) || !Fr(n) || !Ir(r) || !(n?.length || r?.length) || !Pr(e) ? void 0 : {
-				...r ? { characteristics: [...r] } : {},
-				key: t,
-				kind: "test",
-				...typeof e.roll == "string" ? { roll: e.roll } : {},
-				...n ? { skills: [...n] } : {},
-				...R(e.value) ? { value: e.value } : {}
-			};
-		}
-		case "wounds": return !L(e, [
-			"key",
-			"kind",
-			"value"
-		]) || !R(e.value) ? void 0 : {
-			key: t,
-			kind: "wounds",
-			value: e.value
-		};
-		default: return;
-	}
-}
-function Rr(e) {
-	return !I(e) || typeof e.message != "string" ? !1 : [
-		"conflict",
-		"eligibility",
-		"exhausted",
-		"maximum"
-	].includes(String(e.kind));
-}
-function z(...e) {
-	let t = e.flatMap((e) => e ?? []).filter(Rr);
-	return t.filter((e, n) => t.findIndex((t) => t.kind === e.kind && t.message === e.message) === n);
-}
-function zr(e, t) {
-	if (!I(e)) return !1;
-	let n = (e) => typeof e === t && (t !== "number" || Number.isFinite(e));
-	return Object.values(e).every((e) => n(e) || Array.isArray(e) && e.every(n));
-}
-function Br(e) {
-	if (!I(e) || e.version !== 1 || e.status !== "pending" && e.status !== "resolved" || !Number.isSafeInteger(e.occurrence) || Number(e.occurrence) < 1 || !zr(e.rolls, "number") || !zr(e.selections, "string") || !Array.isArray(e.grants)) return;
-	let t = Array.isArray(e.modifiers) ? e.modifiers.map(Lr).filter((e) => e !== void 0) : [];
-	return {
-		acceptedBlocks: z(Array.isArray(e.acceptedBlocks) ? e.acceptedBlocks : void 0),
-		grants: e.grants,
-		modifiers: t,
-		occurrence: Number(e.occurrence),
-		rolls: e.rolls,
-		selections: e.selections,
-		status: e.status,
-		version: 1
-	};
-}
-function Vr(t) {
-	let n = t.getFlag(e, "mutationAutomation");
-	return I(n) && I(n.acquisition) ? n : void 0;
-}
-function Hr(e, t) {
-	return e.some((e) => e.kind === t.kind && e.message === t.message);
-}
-//#endregion
-//#region src/module/wfrp4e/mutants-handbook/acquisition/progression.ts
-function B(e, t, n, r, i, a) {
-	if (!r) throw Error(`Acquisition step ${n.key} has no fallback option.`);
-	let o = Or(e.mutationName, n.prompt, i, a);
-	if (Hr(t.acceptedBlocks ?? [], o)) return r;
-	throw new Dr(o);
-}
-function Ur(e, t, n, r, i) {
-	let a = e.previousStates?.at(-1), o = F(a?.occurrence === e.occurrence - 1 ? a.selections : {}, n.key, r), s = i.findIndex((e) => e.id === o);
-	return s < 0 ? B(e, t, n, i[0], "eligibility", "cannot advance because no earlier resolved result is available") : s >= i.length - 1 ? B(e, t, n, i[s], "exhausted", "has no further result remaining") : i[s + 1];
-}
-function Wr(e, t, n, r, i) {
-	let a = e.previousStates?.at(-1), o = F(a?.selections ?? {}, n.key, r) ?? n.initial, s = i.findIndex((e) => e.id === o);
-	return s < 0 ? B(e, t, n, i[0], "eligibility", "cannot advance because no earlier resolved result is available") : gr(n.advanceWhen, t, e.facts ?? {}) ? s >= i.length - 1 ? B(e, t, n, i[s], "exhausted", "has no further result remaining") : i[s + 1] : i[s];
-}
-//#endregion
-//#region src/module/wfrp4e/mutants-handbook/acquisition/repeat.ts
-function Gr(e, t, n) {
-	if (!(t <= 1)) {
-		if (e.repeat === "copy-first" && !n.some((e) => e.occurrence === 1)) return "cannot copy because the first occurrence has no resolved result";
-		if (e.repeat === "unique") {
-			let e = new Set(n.map((e) => e.occurrence));
-			for (let n = 1; n < t; n += 1) if (!e.has(n)) return `cannot guarantee a unique result because occurrence ${n} is unresolved`;
-		}
-	}
-}
-//#endregion
-//#region src/module/wfrp4e/mutants-handbook/acquisition/text.ts
-async function Kr(e) {
-	let { executionIndex: t, mutationName: n, previousStates: r, services: i, state: a, step: o } = e;
-	if (F(a.selections, o.key, t) !== void 0) return;
-	let s;
-	a.occurrence > 1 && o.repeat === "copy-first" && (s = F(r.find((e) => e.occurrence === 1)?.selections ?? {}, o.key, t));
-	let c = new Set(r.flatMap((e) => {
-		let t = e.selections[o.key];
-		return Array.isArray(t) ? t : t === void 0 ? [] : [t];
-	})), l;
-	for (let e = 0; s === void 0 && e < 10; e += 1) {
-		let e = await i.input({
-			prompt: o.prompt,
-			title: n
-		});
-		if (e === void 0) throw Tr;
-		l = e, (o.repeat !== "unique" || !c.has(e)) && (s = e);
-	}
-	if (s === void 0) {
-		let e = Or(n, o.prompt, "exhausted", "has no unique value remaining");
-		if (!Hr(a.acceptedBlocks ?? [], e)) throw new Dr(e);
-		s = l;
-	}
-	if (s === void 0) throw Error(`Acquisition step ${o.key} has no text fallback.`);
-	fr(a.selections, o.key, t, s);
-}
-//#endregion
-//#region src/module/wfrp4e/mutants-handbook/acquisition/engine.ts
-var qr = class {
-	request;
-	services;
-	announcements = [];
-	executionCounts = /* @__PURE__ */ new Map();
-	facts;
-	previous;
-	state;
-	stepsByKey;
-	topLevelRolls = {};
-	resolutions = 0;
-	get mutationName() {
-		return this.request.mutationName;
-	}
-	constructor(e, t) {
-		this.request = e, this.services = t, this.previous = e.previousStates ?? [], this.facts = e.facts ?? {}, this.state = br(e.initialState, e.occurrence), this.state.acceptedBlocks = z(this.state.acceptedBlocks, e.acceptedBlocks), this.stepsByKey = new Map((e.steps ?? []).map((e) => [e.key, e]));
-	}
-	async run() {
-		try {
-			await this.resolveRetainedRolls();
-			let e = new Set((this.request.steps ?? []).flatMap((e) => (e.options ?? []).flatMap((e) => e.next ? [e.next] : [])));
-			for (let t of this.request.steps ?? []) e.has(t.key) || await this.visit(t, 0);
-			return this.state.status = "resolved", {
-				announcements: this.announcements,
-				retainedRolls: this.topLevelRolls,
-				state: this.state,
-				status: "resolved"
-			};
-		} catch (e) {
-			if (e === Tr) return { status: "cancelled" };
-			if (e instanceof Dr) return {
-				announcements: this.announcements,
-				block: e.block,
-				state: this.state,
-				status: "blocked"
-			};
-			throw e;
-		}
-	}
-	async resolveRetainedRolls() {
-		for (let e of this.request.retainedRolls ?? []) {
-			let t = this.state.rolls[e.key];
-			if (Array.isArray(t) && (t = t[0]), typeof t != "number" || !Number.isFinite(t)) {
-				let n = await this.roll(e.formula, `${this.request.mutationName}: retained roll`);
-				t = n.total, this.state.rolls[e.key] = t, n.announce && this.announcements.push(n.announce);
-			}
-			this.topLevelRolls[e.key] = t;
-		}
-	}
-	async visit(e, t) {
-		if (t > Er.depth) throw Error("Mutation acquisition nesting exceeds its safe limit.");
-		if (!gr(e.when, this.state, this.facts)) return;
-		let n = Gr(e, this.request.occurrence, this.previous);
-		if (n) {
-			let t = Or(this.request.mutationName, e.prompt, "eligibility", n);
-			if (!Hr(this.state.acceptedBlocks ?? [], t)) throw new Dr(t);
-		}
-		let r = Math.max(1, Math.trunc(e.count ?? 1));
-		for (let n = 0; n < r; n += 1) await this.resolveStep(e, t);
-	}
-	async resolveStep(e, t) {
-		if (this.resolutions += 1, this.resolutions > Er.resolutions) throw Error("Mutation acquisition contains too many nested resolutions.");
-		let n = this.executionCounts.get(e.key) ?? 0;
-		if (this.executionCounts.set(e.key, n + 1), e.kind === "text") {
-			await Kr({
-				executionIndex: n,
-				mutationName: this.request.mutationName,
-				previousStates: this.previous,
-				services: this.services,
-				state: this.state,
-				step: e
-			});
-			return;
-		}
-		let r = (e.options ?? []).filter((e) => gr(e.when, this.state, this.facts));
-		if (r.length === 0) throw Error(`Acquisition step ${e.key} has no options.`);
-		let i = F(this.state.selections, e.key, n), a = i ? r.find((e) => e.id === i) : await this.resolveOption(e, n, r);
-		if (!a) throw Error(`Acquisition step ${e.key} retained an unknown option.`);
-		if (fr(this.state.selections, e.key, n, a.id), a.next) {
-			let n = this.stepsByKey.get(a.next);
-			if (!n) throw Error(`Acquisition step ${e.key} references missing ${a.next}.`);
-			await this.visit(n, t + 1);
-		}
-		await wr(this, e, n, a);
-	}
-	async resolveOption(e, t, n) {
-		let r = this.request.occurrence > 1;
-		if (!r && e.initial) {
-			let t = n.find((t) => t.id === e.initial);
-			if (!t) throw Error(`Acquisition step ${e.key} has no initial option.`);
-			return t;
-		}
-		if (r && e.repeat === "copy-first") {
-			let r = F(this.previous.find((e) => e.occurrence === 1)?.selections ?? {}, e.key, t), i = n.find((e) => e.id === r);
-			if (i) return i;
-		}
-		if (r && e.repeat === "advance") return Ur(this.request, this.state, e, t, n);
-		if (r && e.repeat === "conditional-advance") return Wr(this.request, this.state, e, t, n);
-		let i = r && e.repeat === "unique" ? dr(e.key, n, [...this.previous, this.state]) : n;
-		if (i.length === 0) {
-			let r = F(this.previous.at(-1)?.selections ?? {}, e.key, t);
-			return B(this.request, this.state, e, n.find((e) => e.id === r) ?? n.at(-1), "exhausted", "has no further result remaining");
-		}
-		return e.kind === "choice" && (e.options?.length ?? 0) > 1 && i.length === 1 ? i[0] : e.kind === "table" ? this.resolveTable(e, t, i) : this.choose(e, i);
-	}
-	async resolveTable(e, t, n) {
-		if ((await this.choose(e, [{
-			id: "roll",
-			label: "Roll"
-		}, {
-			id: "choose",
-			label: "Choose"
-		}])).id === "choose") return this.choose(e, n);
-		for (let r = 0; r < Er.tableRolls; r += 1) {
-			let r = await this.roll(e.formula ?? "1d100", `${this.request.mutationName}: ${e.prompt}`), i = n.filter((e) => r.total >= (e.min ?? -Infinity) && r.total <= (e.max ?? Infinity));
-			if (i.length === 0) continue;
-			let a = i.length === 1 ? i[0] : await this.choose(e, i);
-			return fr(this.state.rolls, e.key, t, r.total), r.announce && this.announcements.push(r.announce), a;
-		}
-		return B(this.request, this.state, e, n.at(-1), "exhausted", "has no further result remaining");
-	}
-	async choose(e, t) {
-		let n = await this.services.choose({
-			options: t,
-			prompt: e.prompt,
-			title: this.request.mutationName
-		});
-		if (n === void 0) throw Tr;
-		let r = t.find((e) => e.id === n);
-		if (!r) throw Error(`Acquisition dialog returned unknown option ${n}.`);
-		return r;
-	}
-	async roll(e, t) {
-		let n = await this.services.roll(e, t);
-		if (!Number.isFinite(n.total)) throw Error(`Acquisition roll ${e} was not finite.`);
-		return n;
-	}
-};
-//#endregion
-//#region src/module/wfrp4e/mutants-handbook/acquisition/resolve.ts
-async function Jr(e, t) {
-	let n = e.initialState, r = (e.retainedRolls ?? []).every((e) => Number.isFinite(n?.rolls[e.key]));
-	if (n?.status !== "resolved" || !r) return new qr(e, t).run();
-	let i = br(n, e.occurrence);
-	return i.grants = [...n.grants], i.modifiers = [...n.modifiers], i.acceptedBlocks = z(n.acceptedBlocks, e.acceptedBlocks), i.status = "resolved", {
-		announcements: [],
-		retainedRolls: {
-			...xr(i),
-			...Object.fromEntries((e.retainedRolls ?? []).map((e) => [e.key, i.rolls[e.key]]))
-		},
-		state: i,
-		status: "resolved"
-	};
-}
-//#endregion
-//#region src/module/wfrp4e/mutants-handbook/acquisition/dialog.ts
-function V(e) {
-	return e.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\"", "&quot;").replaceAll("'", "&#39;");
-}
-async function Yr(e) {
-	let t = e.options.filter((e) => e.description), n = [...t.length ? [
-		"<ul class=\"tw:flex tw:flex-col tw:gap-2\">",
-		...t.map((e) => `<li><strong>${V(e.label)}</strong><div class="tw:text-sm tw:opacity-70">${V(e.description ?? "")}</div></li>`),
-		"</ul>"
-	] : []];
-	if (e.options.length > 4) {
-		let t = [
-			"<div class=\"fvtt-wfrp-ratter-root tw:flex tw:flex-col tw:gap-2\">",
-			"<fieldset class=\"tw:dui-fieldset\">",
-			`<legend class="tw:dui-fieldset-legend">${V(e.prompt)}</legend>`,
-			"<select class=\"tw:dui-select tw:w-full\" name=\"mutation-acquisition-choice\">",
-			...e.options.map((e) => `<option value="${V(e.id)}">${V(e.label)}</option>`),
-			"</select>",
-			"</fieldset>",
-			...n,
-			"</div>"
-		].join(""), r = await foundry.applications.api.DialogV2.wait({
-			buttons: [{
-				action: "save",
-				callback: (e, t) => {
-					let n = t.form?.elements.namedItem("mutation-acquisition-choice");
-					return n instanceof HTMLSelectElement ? n.value : void 0;
-				},
-				default: !0,
-				label: "Select"
-			}, {
-				action: "cancel",
-				callback: () => void 0,
-				label: "Cancel"
-			}],
-			content: t,
-			rejectClose: !1,
-			window: { title: e.title }
-		});
-		return typeof r == "string" && e.options.some((e) => e.id === r) ? r : void 0;
-	}
-	let r = [
-		"<div class=\"fvtt-wfrp-ratter-root tw:flex tw:flex-col tw:gap-2\">",
-		`<p>${V(e.prompt)}</p>`,
-		...n,
-		"</div>"
-	].join(""), i = await foundry.applications.api.DialogV2.wait({
-		buttons: e.options.map((e, t) => ({
-			action: e.id,
-			callback: () => e.id,
-			default: t === 0,
-			label: e.label
-		})),
-		content: r,
-		rejectClose: !1,
-		window: { title: e.title }
-	});
-	return typeof i == "string" && e.options.some((e) => e.id === i) ? i : void 0;
-}
-async function Xr(e, t) {
-	let n = await foundry.applications.api.DialogV2.wait({
-		buttons: [{
-			action: "save",
-			callback: (e, t) => {
-				let n = t.form?.elements.namedItem("mutation-acquisition-value");
-				return n instanceof HTMLInputElement ? n.value.trim() : void 0;
-			},
-			default: !0,
-			label: "Save"
-		}, {
-			action: "cancel",
-			callback: () => void 0,
-			label: "Cancel"
-		}],
-		content: `<fieldset class="fvtt-wfrp-ratter-root tw:dui-fieldset"><legend class="tw:dui-fieldset-legend">${V(e)}</legend><input class="tw:dui-input tw:w-full" name="mutation-acquisition-value" type="text" autocomplete="off" required></fieldset>`,
-		rejectClose: !1,
-		window: { title: t }
-	});
-	return typeof n == "string" && n.length > 0 ? n : void 0;
-}
-async function Zr(e, t) {
-	let n = new Roll(e);
-	await n.evaluate({ allowInteractive: !1 });
-	let r = n.total;
-	if (typeof r != "number" || !Number.isFinite(r)) throw Error(`Acquisition roll ${e} did not produce a finite total.`);
-	return {
-		announce: async () => {
-			await n.toMessage({ flavor: t });
-		},
-		total: r
-	};
-}
-var Qr = {
-	choose: Yr,
-	input: ({ prompt: e, title: t }) => Xr(e, t),
-	roll: Zr
-};
-function $r(e) {
-	return Object.entries(e).map(([e, t]) => `<div><dt class="tw:font-semibold">${V(e)}</dt><dd>${V(Array.isArray(t) ? t.join(", ") : String(t))}</dd></div>`);
-}
-async function ei(e, t) {
-	let n = (t.acceptedBlocks ?? []).map((e) => `<li><span>${V(e.message)}</span></li>`), r = [
-		"<div class=\"fvtt-wfrp-ratter-root tw:flex tw:flex-col tw:gap-3\">",
-		"<p>This mutation already has a resolved acquisition. Keep it, or explicitly reconfigure its stored results.</p>",
-		"<dl class=\"tw:grid tw:grid-cols-2 tw:gap-2\">",
-		...$r(t.selections),
-		...$r(t.rolls),
-		"</dl>",
-		...n.length ? [
-			"<div role=\"alert\" class=\"tw:dui-alert tw:dui-alert-warning\"><ul>",
-			...n,
-			"</ul></div>"
-		] : [],
-		"</div>"
-	].join("");
-	return await foundry.applications.api.DialogV2.wait({
-		buttons: [{
-			action: "keep",
-			callback: () => "keep",
-			default: !0,
-			label: "Keep"
-		}, {
-			action: "reconfigure",
-			callback: () => "reconfigure",
-			label: "Reconfigure"
-		}],
-		content: r,
-		rejectClose: !1,
-		window: { title: `Review ${e}` }
-	}) === "reconfigure" ? "reconfigure" : "keep";
-}
-//#endregion
-//#region src/module/wfrp4e/mutants-handbook/acquisition/history.ts
-function ti(e, t, n) {
-	let r = [...e.items].filter((e) => e.getFlag("fvtt-wfrp-ratter", "mutantsHandbookPossessionRemoved") === !0 || e.getFlag("fvtt-wfrp-ratter", "mutantsHandbookRetired") === !0 ? !1 : Vr(e)?.definitionId === n), i = r.findIndex((e) => e.id === t.id), a = r.flatMap((e, t) => {
-		let n = Br(Vr(e)?.state?.acquisition);
-		return n?.status === "resolved" ? [{
-			index: t,
-			state: n
-		}] : [];
-	}), o = i >= 0 ? a.find(({ index: e }) => e === i)?.state : void 0, s = a.reduce((e, { state: t }) => Math.max(e, t.occurrence), 0), c = o?.occurrence ?? (i >= 0 ? i + 1 : Math.max(r.length, s) + 1), l = a.filter(({ index: e, state: t }) => o ? t.occurrence < c : i < 0 || e < i).sort((e, t) => e.state.occurrence - t.state.occurrence || e.index - t.index).map(({ state: e }) => e);
-	return {
-		isLatest: i < 0 || i === r.length - 1,
-		occurrence: c,
-		previousStates: l
-	};
-}
-//#endregion
-//#region src/module/wfrp4e/mutants-handbook/acquisition/persistence.ts
-function ni(e) {
-	return I(e) ? Object.fromEntries(Object.entries(e).filter((e) => Number.isFinite(e[1]))) : {};
-}
-function ri(e) {
-	return new Set(e?.modifiers.map((e) => e.key) ?? []);
-}
-function ii(e) {
-	return Br(e.state?.acquisition);
-}
-function ai(e, t, n) {
-	let r = ni(e.state?.rolls), i = Object.fromEntries((e.retainedRolls ?? []).filter((e) => typeof r[e.key] == "number").map((e) => [e.key, r[e.key]]));
-	if (!(Object.keys(i).length === 0 && n.length === 0)) return {
-		acceptedBlocks: [...n],
-		grants: [],
-		modifiers: [],
-		occurrence: t,
-		rolls: i,
-		selections: {},
-		status: "pending",
-		version: 1
-	};
-}
-function oi(e, t) {
-	return {
-		acceptedBlocks: [...t],
-		grants: [],
-		modifiers: [],
-		occurrence: e,
-		rolls: {},
-		selections: {},
-		status: "pending",
-		version: 1
-	};
-}
-async function si(t, n, r, i, a, o, s) {
-	let c = I(n.state) ? { ...n.state } : {}, l = ni(c.rolls);
-	if (a) {
-		let e = ri(o);
-		for (let t of n.retainedRolls ?? []) e.add(t.key);
-		for (let t of e) delete l[t];
-	}
-	let u = {
-		...c,
-		acquisition: r.state,
-		rolls: {
-			...l,
-			...r.retainedRolls
-		}
-	}, d = { [`flags.${e}.mutationAutomation.state`]: u };
-	if (!i) {
-		if (!t.updateSource) throw Error(`Foundry cannot stage acquisition state for ${t.name}.`);
-		t.updateSource(d);
-		return;
-	}
-	if (!t.update) throw Error(`Foundry cannot update acquisition state for ${t.name}.`);
-	await t.update(d, s);
-}
-//#endregion
-//#region src/module/wfrp4e/mutants-handbook/acquisition/runtime.ts
-var ci = 8;
-function li(e) {
-	return I(e) ? e.type === "mutation" && typeof e.id == "string" && typeof e.name == "string" && typeof e.getFlag == "function" && typeof e.toObject == "function" : !1;
-}
-function di(e, t) {
-	return t.items.has?.(e.id) === !0 ? !0 : t.items.get?.(e.id) !== void 0 || [...t.items].some((t) => t === e);
-}
-function fi(e) {
-	let t = e.mutationAcquisitionAcceptedBlocks;
-	return z(Array.isArray(t) ? t : void 0);
-}
-function pi(e, t) {
-	e.mutationAcquisitionAcceptedBlocks = [...t];
-}
-function H(e, t = !1) {
-	return e.abortItemCreation = !0, e.mutationAcquisitionCancelled = !0, t && (e.mutationAcquisitionRerollRequested = !0), !1;
-}
-async function mi(e, t, n, r, i) {
-	for (let a of t) {
-		if (Hr(n, a)) continue;
-		let t = await Qe(e, a, i);
-		if (t === "reroll") return H(r, !0);
-		if (t !== "accept") return H(r);
-		n.splice(0, n.length, ...z(n, [a])), pi(r, n);
-	}
-	return !0;
-}
-async function hi(e, t, n, r, i, a) {
-	let o = ee(t.system.mutationType.value);
-	if (!o) throw Error(`${t.name} has no physical or mental mutation classification.`);
-	let s = Pe(e, {
-		acquisition: n.acquisition,
-		data: t.toObject(),
-		name: t.name,
-		nature: o
-	}, r ? t.id : void 0);
-	return mi(t.name, s, i, a, a.mutationAcquisitionCanReroll === !0);
-}
-async function gi(e, t, n) {
-	if (n.skipMutationAcquisition === !0 || !li(e)) return !0;
-	let r = ye(t) ? t : ye(e.actor) ? e.actor : void 0;
-	if (!r) return !0;
-	let i = Vr(e);
-	if (!i) return !0;
-	let a = di(e, r), o = ii(i), s = n.mutationAcquisitionReconfigure === !0, c = ti(r, e, i.definitionId);
-	if (s && a && !c.isLatest) return ui.notifications.warn(`${e.name}: only the latest active occurrence can be reconfigured because later results depend on its retained history.`), !1;
-	let l = c.occurrence, u = z(o?.acceptedBlocks, fi(n));
-	if (pi(n, u), !await hi(r, e, i, a, u, n)) return !1;
-	let d = s ? oi(l, u) : o;
-	d ??= ai(i, l, u);
-	let f = [];
-	for (let t = 0; t < ci; t += 1) {
-		let t = await Jr({
-			acceptedBlocks: u,
-			facts: {
-				actor: {
-					name: r.name,
-					system: r.system,
-					type: r.type
-				},
-				mutation: {
-					name: e.name,
-					nature: e.system.mutationType.value
-				}
-			},
-			...d ? { initialState: d } : {},
-			mutationName: e.name,
-			occurrence: l,
-			previousStates: c.previousStates,
-			retainedRolls: i.retainedRolls ?? [],
-			steps: i.acquisition.steps ?? []
-		}, Qr);
-		if (t.status === "cancelled") return H(n);
-		if (f.push(...t.announcements), t.status === "blocked") {
-			let r = await Qe(e.name, t.block, n.mutationAcquisitionCanReroll === !0);
-			if (r === "reroll") return H(n, !0);
-			if (r !== "accept") return H(n);
-			u.splice(0, u.length, ...z(u, [t.block])), pi(n, u), d = {
-				...t.state,
-				acceptedBlocks: [...u]
-			};
-			continue;
-		}
-		let p = Fe(r, e.name, t.state, a ? e.id : void 0);
-		if (!await mi(e.name, p, u, n, n.mutationAcquisitionCanReroll === !0)) return !1;
-		await si(e, i, {
-			...t,
-			state: {
-				...t.state,
-				acceptedBlocks: [...u]
-			}
-		}, a, s, o, n);
-		for (let e of f) await e();
-		return !0;
-	}
-	throw Error(`Acquisition review for ${e.name} exceeded its safe limit.`);
-}
-async function _i(e) {
-	let t = await fromUuid(e);
-	if (!li(t) || !ye(t.actor)) throw Error(`The UUID ${e} does not resolve to an owned mutation Item.`);
-	let n = Vr(t);
-	if (!n) throw Error(`${t.name} has no Mutant's Handbook automation data.`);
-	let r = ii(n);
-	if (r?.status === "resolved" && await ei(t.name, r) === "keep") return !0;
-	let i = { ...r?.status === "resolved" ? { mutationAcquisitionReconfigure: !0 } : {} }, a = await gi(t, t.actor, i);
-	return a && await P(t.actor.uuid), a;
+	if (!fe(t)) throw Error(`${e} does not resolve to a WFRP4e character Actor.`);
+	await Qn(t);
 }
 //#endregion
 //#region src/module/wfrp4e/mutants-handbook/actions/documents.ts
-function U(e) {
+function R(e) {
 	return typeof e == "object" && !!e && !Array.isArray(e);
 }
-function vi(e) {
-	return U(e) ? e : void 0;
+function er(e) {
+	return R(e) ? e : void 0;
 }
-function yi(e) {
-	return U(e) ? e : void 0;
+function tr(e) {
+	return R(e) ? e : void 0;
 }
-function bi(e) {
-	return U(e) ? e : void 0;
+function nr(e) {
+	return R(e) ? e : void 0;
 }
-function xi(e) {
-	return U(e.context) || (e.context = {}), e.context;
+function z(e) {
+	return R(e.context) || (e.context = {}), e.context;
 }
-function Si(t) {
+function rr(t) {
 	let n = t.flags?.[e]?.mutationAction;
-	return U(n) && typeof n.actionId == "string" ? n.actionId : void 0;
+	return R(n) && typeof n.actionId == "string" ? n.actionId : void 0;
 }
-function Ci(e, t, n) {
+function ir(e, t, n) {
 	let r = n.context?.mutationActionId, i = n.preData?.options?.mutationActionId, a = n.item;
 	return r === t || i === t || a?.id === e.id || a?.uuid !== void 0 && a.uuid === e.uuid;
 }
-function wi(e) {
+function ar(e) {
 	try {
 		return e.items ? [...e.items] : [];
 	} catch {
 		return [];
 	}
 }
-function W(t, n) {
-	return (t.itemTypes?.mutation ?? wi(t)).filter((t) => {
+function B(t, n) {
+	return (t.itemTypes?.mutation ?? ar(t)).filter((t) => {
 		if (t.type !== void 0 && t.type !== "mutation") return !1;
 		let r = t.flags?.[e], i = r?.mutationAutomation;
-		return (U(i) ? i.definitionId : t.id) === n && r?.mutantsHandbookRetired !== !0 && r?.mutantsHandbookPossessionRemoved !== !0;
+		return (R(i) ? i.definitionId : t.id) === n && r?.mutantsHandbookRetired !== !0 && r?.mutantsHandbookPossessionRemoved !== !0;
 	}).length;
 }
-function Ti(e, t) {
-	return Ei(e, t)[0];
+function or(e, t) {
+	return sr(e, t)[0];
 }
-function Ei(t, n) {
-	return (t.itemTypes?.mutation ?? wi(t)).filter((t) => {
+function sr(t, n) {
+	return (t.itemTypes?.mutation ?? ar(t)).filter((t) => {
 		if (t.type !== void 0 && t.type !== "mutation") return !1;
 		let r = t.flags?.[e], i = r?.mutationAutomation;
-		return (U(i) ? i.definitionId : t.id) === n && r?.mutantsHandbookRetired !== !0 && r?.mutantsHandbookPossessionRemoved !== !0;
+		return (R(i) ? i.definitionId : t.id) === n && r?.mutantsHandbookRetired !== !0 && r?.mutantsHandbookPossessionRemoved !== !0;
 	});
 }
-function Di(t) {
-	let n = t?.flags?.[e]?.mutationAutomation, r = t?.getFlag?.(e, "mutationAutomation"), i = U(n) ? n : U(r) ? r : void 0, a = U(i?.state) ? i.state : void 0, o = U(a?.acquisition) ? a.acquisition : void 0;
+function cr(t) {
+	let n = t?.flags?.[e]?.mutationAutomation, r = t?.getFlag?.(e, "mutationAutomation"), i = R(n) ? n : R(r) ? r : void 0, a = R(i?.state) ? i.state : void 0, o = R(a?.acquisition) ? a.acquisition : void 0;
 	return o?.status === "resolved" ? o : {};
 }
 //#endregion
 //#region src/module/wfrp4e/mutants-handbook/actions/usage.ts
-var Oi = "mutationActionUsage", ki = 480 * 60, Ai = "dimensional-instability-teleport", ji = /* @__PURE__ */ new Map();
-function Mi() {
+var lr = "mutationActionUsage", ur = 480 * 60, dr = "dimensional-instability-teleport", V = /* @__PURE__ */ new Map();
+function H() {
 	return Reflect.get(globalThis, "game");
 }
-function Ni() {
-	let e = Number(Mi()?.time?.worldTime);
+function fr() {
+	let e = Number(H()?.time?.worldTime);
 	return Number.isFinite(e) ? e : Math.floor(Date.now() / 1e3);
 }
-function Pi(t) {
-	let n = t.flags?.[e]?.[Oi];
-	if (!U(n) || n.version !== 1 || !U(n.actions)) return {
+function pr(t) {
+	let n = t.flags?.[e]?.[lr];
+	if (!R(n) || n.version !== 1 || !R(n.actions)) return {
 		actions: {},
 		version: 1
 	};
 	let r = {};
-	for (let [e, t] of Object.entries(n.actions)) Array.isArray(t) && (r[e] = t.filter((e) => U(e) && typeof e.id == "string" && Number.isFinite(e.at) && typeof e.period == "string" && typeof e.targetId == "string"));
+	for (let [e, t] of Object.entries(n.actions)) Array.isArray(t) && (r[e] = t.filter((e) => R(e) && typeof e.id == "string" && Number.isFinite(e.at) && typeof e.period == "string" && typeof e.targetId == "string"));
 	return {
 		actions: r,
 		version: 1
 	};
 }
-function Fi(e, t) {
-	return e === "day" ? `day:${Math.floor(t / 86400)}` : e === "scene" ? `scene:${Mi()?.combat?.id ?? Mi()?.scene?.id ?? "none"}` : e ?? "use";
+function mr(e, t) {
+	return e === "day" ? `day:${Math.floor(t / 86400)}` : e === "scene" ? `scene:${H()?.combat?.id ?? H()?.scene?.id ?? "none"}` : e ?? "use";
 }
-function Ii(e) {
+function hr(e) {
 	if (typeof e == "string") return e;
-	if (U(e)) for (let t of [
+	if (R(e)) for (let t of [
 		"token",
 		"id",
 		"uuid",
@@ -4610,45 +3477,45 @@ function Ii(e) {
 	]) {
 		let n = e[t];
 		if (typeof n == "string") return n;
-		if (U(n)) {
+		if (R(n)) {
 			let e = n.uuid ?? n.id;
 			if (typeof e == "string") return e;
 		}
 	}
 }
-function Li(e, t) {
+function gr(e, t) {
 	if (!e.usage?.perTarget) return ["*"];
-	let n = t?.context?.targets, r = Array.isArray(n) ? n : [...Mi()?.user?.targets ?? []], i = [...new Set(r.map(Ii).filter((e) => !!e))];
+	let n = t?.context?.targets, r = Array.isArray(n) ? n : [...H()?.user?.targets ?? []], i = [...new Set(r.map(hr).filter((e) => !!e))];
 	return i.length ? i : ["untargeted"];
 }
-function Ri(e, t, n = Ni()) {
-	let r = Pi(t).actions[e.id] ?? [];
-	if (e.usage?.period === "eight-hours" || e.id === Ai) return r.filter((e) => e.at > n - ki);
-	let i = Fi(e.usage?.period, n);
+function U(e, t, n = fr()) {
+	let r = pr(t).actions[e.id] ?? [];
+	if (e.usage?.period === "eight-hours" || e.id === dr) return r.filter((e) => e.at > n - ur);
+	let i = mr(e.usage?.period, n);
 	return r.filter((e) => e.period === i);
 }
-function zi(e, t) {
+function _r(e, t) {
 	let n = e.usage?.max;
 	return n === "tb" ? Math.max(0, Number(t.system?.characteristics?.t?.bonus) || 0) : typeof n == "number" ? n : Infinity;
 }
-function Bi(e) {
-	let t = xi(e), n = t.mutationActionUseId;
+function vr(e) {
+	let t = z(e), n = t.mutationActionUseId;
 	if (typeof n == "string" && n) return n;
 	let r = globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random()}`;
 	return t.mutationActionUseId = r, r;
 }
-function Vi(e, t, n, r) {
-	let i = zi(e, t), a = Ri(e, n), o = r?.context?.mutationActionUseId;
-	return Li(e, r).every((e) => {
+function yr(e, t, n, r) {
+	let i = _r(e, t), a = U(e, n), o = r?.context?.mutationActionUseId;
+	return gr(e, r).every((e) => {
 		let t = a.filter((t) => t.targetId === e);
 		return t.some((e) => e.id === o) || t.length < i;
 	});
 }
-function Hi(e, t, n, r) {
+function br(e, t, n, r) {
 	let i = r?.context?.mutationActionUseId;
-	return typeof i == "string" && Ri(e, n).some((e) => e.id === i) ? !0 : (Number(t.system?.status?.advantage?.value) || 0) >= (e.usage?.advantageCost ?? 0) && Vi(e, t, n, r);
+	return typeof i == "string" && U(e, n).some((e) => e.id === i) ? !0 : (Number(t.system?.status?.advantage?.value) || 0) >= (e.usage?.advantageCost ?? 0) && yr(e, t, n, r);
 }
-function Ui(e, t) {
+function xr(e, t) {
 	if (e.mutationName !== "Dimensional Instability") return e.test?.difficulty;
 	let n = [
 		"average",
@@ -4657,9 +3524,9 @@ function Ui(e, t) {
 		"hard",
 		"vhard"
 	];
-	return n[Math.min(n.length - 1, Ri(e, t).length)];
+	return n[Math.min(n.length - 1, U(e, t).length)];
 }
-async function Wi(e, t) {
+async function Sr(e, t) {
 	if (t <= 0) return;
 	if (e.modifyAdvantage) {
 		await e.modifyAdvantage(-t);
@@ -4668,55 +3535,55 @@ async function Wi(e, t) {
 	let n = Number(e.system?.status?.advantage?.value) || 0;
 	await e.update?.({ "system.status.advantage.value": Math.max(0, n - t) });
 }
-async function Gi(t, n, r, i) {
-	let a = Bi(i);
-	if (!Hi(t, n, r, i)) return !1;
-	let o = Pi(r), s = o.actions[t.id] ?? [];
+async function Cr(t, n, r, i) {
+	let a = vr(i);
+	if (!br(t, n, r, i)) return !1;
+	let o = pr(r), s = o.actions[t.id] ?? [];
 	if (s.some((e) => e.id === a)) return !0;
-	await Wi(n, t.usage?.advantageCost ?? 0);
-	let c = Ni(), l = Fi(t.usage?.period, c), u = Li(t, i).map((e) => ({
+	await Sr(n, t.usage?.advantageCost ?? 0);
+	let c = fr(), l = mr(t.usage?.period, c), u = gr(t, i).map((e) => ({
 		at: c,
 		id: a,
 		period: l,
 		targetId: e
 	})), d = s.filter((e) => e.at > c - 32 * 86400).slice(-99);
-	return o.actions[t.id] = [...d, ...u], await r.update?.({ [`flags.${e}.${Oi}`]: o }), !0;
+	return o.actions[t.id] = [...d, ...u], await r.update?.({ [`flags.${e}.${lr}`]: o }), !0;
 }
-async function Ki(e, t, n, r) {
-	let i = `${n.uuid ?? n.id ?? "item"}:${e.id}`, a = (ji.get(i) ?? Promise.resolve(!0)).catch(() => !1).then(() => Gi(e, t, n, r));
-	ji.set(i, a);
+async function wr(e, t, n, r) {
+	let i = `${n.uuid ?? n.id ?? "item"}:${e.id}`, a = (V.get(i) ?? Promise.resolve(!0)).catch(() => !1).then(() => Cr(e, t, n, r));
+	V.set(i, a);
 	try {
 		return await a;
 	} finally {
-		ji.get(i) === a && ji.delete(i);
+		V.get(i) === a && V.delete(i);
 	}
 }
-function qi(e, t) {
-	return Ri(e, t).length;
+function Tr(e, t) {
+	return U(e, t).length;
 }
 //#endregion
 //#region src/module/wfrp4e/mutants-handbook/actions/card.ts
-var Ji = "data-ratter-mutation-action";
-function G(e) {
+var Er = "data-ratter-mutation-action";
+function W(e) {
 	return String(e ?? "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\"", "&quot;").replaceAll("'", "&#39;");
 }
-function Yi(e) {
+function Dr(e) {
 	return Array.isArray(e) ? e.filter((e) => typeof e == "string") : typeof e == "string" && e ? [e] : [];
 }
-function K(e, t) {
-	let n = Yi(t);
-	return n.length ? `<p><strong>${G(e)}:</strong> ${n.map(G).join("; ")}</p>` : "";
+function G(e, t) {
+	let n = Dr(t);
+	return n.length ? `<p><strong>${W(e)}:</strong> ${n.map(W).join("; ")}</p>` : "";
 }
-function Xi(e, t, n, r) {
-	let i = Number(r.result?.SL), a = t.system?.characteristics?.wp, o = Math.max(1, W(t, e.mutationId)), s = [
+function Or(e, t, n, r) {
+	let i = Number(r.result?.SL), a = t.system?.characteristics?.wp, o = Math.max(1, B(t, e.mutationId)), s = [
 		Number.isFinite(i) ? `SL ${i}` : void 0,
 		Number.isFinite(Number(a?.value)) ? `WP ${Number(a?.value)}` : void 0,
 		Number.isFinite(Number(a?.bonus)) ? `WPB ${Number(a?.bonus)}` : void 0,
 		`mutation level ${o}`
 	].filter((e) => !!e);
-	return e.usage?.period && s.push(`uses this ${e.usage.period}: ${qi(e, n)}`), s.join("; ");
+	return e.usage?.period && s.push(`uses this ${e.usage.period}: ${Tr(e, n)}`), s.join("; ");
 }
-function Zi(e, t) {
+function kr(e, t) {
 	if (!e.miscast || !t.result) return;
 	if (t.result.tables ??= {}, !t.isFumble) {
 		t.result.tables.miscast?.key === `${e.miscast}mis` && delete t.result.tables.miscast;
@@ -4729,78 +3596,78 @@ function Zi(e, t) {
 		label: r?.i18n?.localize?.(n ? "ROLL.MajorMis" : "ROLL.MinorMis") ?? (n ? "Major Miscast" : "Minor Miscast")
 	};
 }
-function Qi(e, t, n, r) {
-	let i = Yi(e.conditions), a = Dt(e.id).length ? "<p><strong>Automation:</strong> After accepting the final roll, right-click this chat card and choose Apply Mutant’s Handbook Outcome.</p>" : "";
+function Ar(e, t, n, r) {
+	let i = Dr(e.conditions), a = D(e.id).length ? "<p><strong>Automation:</strong> After accepting the final roll, right-click this chat card and choose Apply Mutant’s Handbook Outcome.</p>" : "";
 	return [
-		`<section ${Ji}="${G(e.id)}">`,
-		`<p><strong>${G(e.mutationName)} — ${G(e.name)}</strong></p>`,
-		K("Target", e.target),
-		K("Range", e.range),
-		K("Duration", e.duration),
-		K("Outcome", e.outcome),
-		K("Rules", e.rules),
-		i.length ? `<p><strong>Condition guidance:</strong> ${i.map(G).join("; ")}. Apply these only after the final roll is accepted.</p>` : "",
-		`<p><strong>Rolled values:</strong> ${G(Xi(e, t, n, r))}</p>`,
+		`<section ${Er}="${W(e.id)}">`,
+		`<p><strong>${W(e.mutationName)} — ${W(e.name)}</strong></p>`,
+		G("Target", e.target),
+		G("Range", e.range),
+		G("Duration", e.duration),
+		G("Outcome", e.outcome),
+		G("Rules", e.rules),
+		i.length ? `<p><strong>Condition guidance:</strong> ${i.map(W).join("; ")}. Apply these only after the final roll is accepted.</p>` : "",
+		`<p><strong>Rolled values:</strong> ${W(Or(e, t, n, r))}</p>`,
 		a,
 		"</section>"
 	].join("");
 }
-function $i(e, t, n, r) {
-	!Ci(n, e.id, r) || !r.result || (Zi(e, r), r.result.other ??= [], r.result.other = r.result.other.filter((e) => !e.includes(Ji)), r.result.other.push(Qi(e, t, n, r)));
+function jr(e, t, n, r) {
+	!ir(n, e.id, r) || !r.result || (kr(e, r), r.result.other ??= [], r.result.other = r.result.other.filter((e) => !e.includes(Er)), r.result.other.push(Ar(e, t, n, r)));
 }
-function ea(e) {
-	let t = Dt(e.id).length ? "<p><strong>Automation:</strong> Right-click this chat card and choose Apply Mutant’s Handbook Outcome.</p>" : "";
+function Mr(e) {
+	let t = D(e.id).length ? "<p><strong>Automation:</strong> Right-click this chat card and choose Apply Mutant’s Handbook Outcome.</p>" : "";
 	return [
-		`<section ${Ji}="${G(e.id)}">`,
-		`<h3>${G(e.mutationName)} — ${G(e.name)}</h3>`,
-		K("Target", e.target),
-		K("Range", e.range),
-		K("Duration", e.duration),
-		K("Outcome", e.outcome),
-		K("Rules", e.rules),
-		K("Condition guidance", e.conditions),
+		`<section ${Er}="${W(e.id)}">`,
+		`<h3>${W(e.mutationName)} — ${W(e.name)}</h3>`,
+		G("Target", e.target),
+		G("Range", e.range),
+		G("Duration", e.duration),
+		G("Outcome", e.outcome),
+		G("Rules", e.rules),
+		G("Condition guidance", e.conditions),
 		t,
 		"</section>"
 	].join("");
 }
 //#endregion
 //#region src/module/wfrp4e/mutants-handbook/actions/outcome-documents.ts
-function ta(t) {
+function Nr(t) {
 	let n = t.system?.test, r = n?.options?.mutationActionId ?? n?.preData?.options?.mutationActionId;
 	if (typeof r == "string") return r;
 	let i = t.flags?.[e]?.mutationActionOutcome;
-	return U(i) && typeof i.actionId == "string" ? i.actionId : void 0;
+	return R(i) && typeof i.actionId == "string" ? i.actionId : void 0;
 }
-function na(t) {
+function Pr(t) {
 	return t.flags?.[e]?.mutationActionOutcomeApplied === !0;
 }
-async function ra(t) {
+async function Fr(t) {
 	await t.setFlag?.(e, "mutationActionOutcomeApplied", !0);
 }
-function ia(e) {
-	if (!U(e)) return;
+function Ir(e) {
+	if (!R(e)) return;
 	let t = e.actor;
-	return U(t) ? t : e;
+	return R(t) ? t : e;
 }
-function aa(e) {
-	let t = e?.targets?.filter((e) => U(e)) ?? [];
-	return t.length ? t : [...Reflect.get(globalThis, "game")?.user?.targets ?? []].flatMap((e) => ia(e) ?? []);
+function Lr(e) {
+	let t = e?.targets?.filter((e) => R(e)) ?? [];
+	return t.length ? t : [...Reflect.get(globalThis, "game")?.user?.targets ?? []].flatMap((e) => Ir(e) ?? []);
 }
-async function oa(t) {
+async function Rr(t) {
 	let n = t.system?.test ? Reflect.get(t.system.test, "actor") : void 0;
-	if (U(n)) return n;
-	let r = t.flags?.[e]?.mutationActionOutcome, i = U(r) ? r.actorUuid : void 0;
+	if (R(n)) return n;
+	let r = t.flags?.[e]?.mutationActionOutcome, i = R(r) ? r.actorUuid : void 0;
 	if (typeof i != "string") return;
 	let a = await Reflect.get(globalThis, "fromUuid")?.(i);
-	return U(a) ? a : void 0;
+	return R(a) ? a : void 0;
 }
 //#endregion
 //#region src/module/wfrp4e/mutants-handbook/actions/effect-helpers.ts
-function q(e, t = 0) {
+function K(e, t = 0) {
 	let n = Number(e);
 	return Number.isFinite(n) ? n : t;
 }
-function J(e, t, n) {
+function q(e, t, n) {
 	return {
 		async: !0,
 		label: e,
@@ -4814,7 +3681,7 @@ function J(e, t, n) {
 		trigger: t
 	};
 }
-function Y(e, t) {
+function J(e, t) {
 	return {
 		combat: null,
 		rounds: e ?? null,
@@ -4827,17 +3694,17 @@ function Y(e, t) {
 }
 //#endregion
 //#region src/module/wfrp4e/mutants-handbook/actions/timed-effects.ts
-var sa = "Compendium.wfrp4e-core.items.Item.EO05HX7jql0g605A";
-async function ca(t, n, r) {
+var zr = "Compendium.wfrp4e-core.items.Item.EO05HX7jql0g605A";
+async function Br(t, n, r) {
 	let i = n === "ActiveEffect" ? t.effects : t.items, a = i ? [...i].filter((t) => t.flags?.[e]?.actionId === r).map(({ id: e }) => e).filter((e) => typeof e == "string") : [];
 	a.length && await t.deleteEmbeddedDocuments?.(n, a);
 }
-function X(t, n, r) {
+function Y(t, n, r) {
 	return {
 		changes: [],
 		description: r,
 		disabled: !1,
-		duration: Y(),
+		duration: J(),
 		flags: {
 			[e]: {
 				actionId: t.id,
@@ -4865,19 +3732,19 @@ function X(t, n, r) {
 		type: "base"
 	};
 }
-function la(e, t, n) {
+function Vr(e, t, n) {
 	return {
-		levels: Math.max(1, W(e, t.mutationId)),
-		sl: q(n?.result?.SL),
-		wp: q(e.system?.characteristics?.wp?.value),
-		wpb: q(e.system?.characteristics?.wp?.bonus)
+		levels: Math.max(1, B(e, t.mutationId)),
+		sl: K(n?.result?.SL),
+		wp: K(e.system?.characteristics?.wp?.value),
+		wpb: K(e.system?.characteristics?.wp?.bonus)
 	};
 }
-async function ua(t, n, r) {
+async function Hr(t, n, r) {
 	if (!t.createEmbeddedDocuments) return;
-	let { levels: i, sl: a, wpb: o } = la(t, n, r), s = Math.max(1, o + a) * 2 ** (i - 1), c = (await Reflect.get(globalThis, "fromUuid")?.(sa))?.toObject?.();
+	let { levels: i, sl: a, wpb: o } = Vr(t, n, r), s = Math.max(1, o + a) * 2 ** (i - 1), c = (await Reflect.get(globalThis, "fromUuid")?.(zr))?.toObject?.();
 	if (!c) return;
-	await ca(t, "Item", n.id), delete c._id, c.name = `${n.mutationName} — Flight (${30 * i})`;
+	await Br(t, "Item", n.id), delete c._id, c.name = `${n.mutationName} — Flight (${30 * i})`;
 	let l = c.system ??= {}, u = l.specification ??= {};
 	u.value = String(30 * i);
 	let d = c.flags ??= {};
@@ -4888,9 +3755,9 @@ async function ua(t, n, r) {
 	};
 	let f = Array.isArray(c.effects) ? c.effects : [];
 	f.push({
-		...X(n, "Levitation duration", `Expires after ${s} rounds.`),
+		...Y(n, "Levitation duration", `Expires after ${s} rounds.`),
 		system: {
-			scriptData: [J("Expire Mutant's Handbook outcome", "endRound", `const key = "flags.${e}.rounds";\nconst left = Number(this.item.getFlag("${e}", "rounds")) - 1;\nif (left <= 0) return this.item.delete();\nreturn this.item.update({[key]: left});`)],
+			scriptData: [q("Expire Mutant's Handbook outcome", "endRound", `const key = "flags.${e}.rounds";\nconst left = Number(this.item.getFlag("${e}", "rounds")) - 1;\nif (left <= 0) return this.item.delete();\nreturn this.item.update({[key]: left});`)],
 			sourceData: {},
 			transferData: {
 				area: { aura: {} },
@@ -4905,22 +3772,22 @@ async function ua(t, n, r) {
 		transfer: !0
 	}), c.effects = f, await t.createEmbeddedDocuments("Item", [c]);
 }
-function da(t, n, r, i, a = n) {
-	let { levels: o, sl: s, wp: c, wpb: l } = la(a, r, i);
+function Ur(t, n, r, i, a = n) {
+	let { levels: o, sl: s, wp: c, wpb: l } = Vr(a, r, i);
 	if (t === "invisible") {
-		let e = Math.max(1, c + s) * 2 ** (o - 1), t = X(r, "Invisible", "Ends early after an attack or conspicuously loud noise.");
-		return t.duration = Y(e), t.statuses = ["invisible"], t.img = "icons/svg/invisible.svg", t;
+		let e = Math.max(1, c + s) * 2 ** (o - 1), t = Y(r, "Invisible", "Ends early after an attack or conspicuously loud noise.");
+		return t.duration = J(e), t.statuses = ["invisible"], t.img = "icons/svg/invisible.svg", t;
 	}
 	if (t === "entrancement") {
-		let e = Math.max(1, l + s), t = X(r, `${r.mutationName} — Entranced`, `The source mutant gains +20 to social interactions with this Actor for ${e} hours.`);
-		return t.duration = Y(void 0, e * 3600), t;
+		let e = Math.max(1, l + s), t = Y(r, `${r.mutationName} — Entranced`, `The source mutant gains +20 to social interactions with this Actor for ${e} hours.`);
+		return t.duration = J(void 0, e * 3600), t;
 	}
 	if (t === "camouflage") {
-		let e = X(r, "Chameleon Camouflage (Scene)", "+20 to Stealth while the skin still matches the surroundings; delete when the scene changes."), t = e.system;
-		return t.scriptData = [J("Expire Mutant's Handbook outcome", "dialog", "if (args.skill?.name?.toLowerCase().includes(\"stealth\")) args.fields.modifier += 20;"), J("Expire Mutant's Handbook outcome", "endCombat", "return this.effect.delete();")], e;
+		let e = Y(r, "Chameleon Camouflage (Scene)", "+20 to Stealth while the skin still matches the surroundings; delete when the scene changes."), t = e.system;
+		return t.scriptData = [q("Expire Mutant's Handbook outcome", "dialog", "if (args.skill?.name?.toLowerCase().includes(\"stealth\")) args.fields.modifier += 20;"), q("Expire Mutant's Handbook outcome", "endCombat", "return this.effect.delete();")], e;
 	}
 	if (t === "foresight") {
-		let t = q(n.system?.status && n.system.status.fortune ? n.system.status.fortune.value : 0), i = X(r, "Oracle Foresight (Scene)", `+10 Initiative and ${o} temporary Fortune; delete when the scene ends.`);
+		let t = K(n.system?.status && n.system.status.fortune ? n.system.status.fortune.value : 0), i = Y(r, "Oracle Foresight (Scene)", `+10 Initiative and ${o} temporary Fortune; delete when the scene ends.`);
 		i.changes = [{
 			key: "system.characteristics.i.modifier",
 			mode: 2,
@@ -4928,37 +3795,37 @@ function da(t, n, r, i, a = n) {
 			value: "10"
 		}];
 		let a = i.system;
-		a.scriptData = [J("Expire Mutant's Handbook outcome", "endCombat", "return this.effect.delete();"), J("Expire Mutant's Handbook outcome", "deleteEffect", `const current = Number(this.actor.system.status.fortune.value);\nif (current > ${t}) return this.actor.update({"system.status.fortune.value": ${t}});`)];
+		a.scriptData = [q("Expire Mutant's Handbook outcome", "endCombat", "return this.effect.delete();"), q("Expire Mutant's Handbook outcome", "deleteEffect", `const current = Number(this.actor.system.status.fortune.value);\nif (current > ${t}) return this.actor.update({"system.status.fortune.value": ${t}});`)];
 		let s = i.flags, c = s[e] ??= {};
 		return c.baseFortune = t, c.fortune = o, i;
 	}
 	let u = Math.max(1, c);
 	if (t === "temporal-surge") {
-		let e = X(r, "Temporal Surge (This Turn)", "One additional Movement and Action are available during the current turn.");
-		e.duration = Y();
+		let e = Y(r, "Temporal Surge (This Turn)", "One additional Movement and Action are available during the current turn.");
+		e.duration = J();
 		let t = e.system;
-		return t.scriptData = [J("Expire Mutant's Handbook outcome", "endTurn", "return this.effect.delete();")], e;
+		return t.scriptData = [q("Expire Mutant's Handbook outcome", "endTurn", "return this.effect.delete();")], e;
 	}
-	let d = X(r, "Telekinesis Active", `May move matter at WPB yards per round for ${u} rounds.`);
-	return d.duration = Y(u), d;
+	let d = Y(r, "Telekinesis Active", `May move matter at WPB yards per round for ${u} rounds.`);
+	return d.duration = J(u), d;
 }
-async function fa(e, t, n, r, i = t) {
-	if (e === "levitation") return ua(t, n, r);
-	await ca(t, "ActiveEffect", n.id);
-	let a = da(e, t, n, r, i);
+async function Wr(e, t, n, r, i = t) {
+	if (e === "levitation") return Hr(t, n, r);
+	await Br(t, "ActiveEffect", n.id);
+	let a = Ur(e, t, n, r, i);
 	if (await t.createEmbeddedDocuments?.("ActiveEffect", [a]), e === "foresight") {
-		let e = Math.max(1, W(t, n.mutationId)), r = t.system?.status?.fortune, i = q(r?.value);
+		let e = Math.max(1, B(t, n.mutationId)), r = t.system?.status?.fortune, i = K(r?.value);
 		await t.update?.({ "system.status.fortune.value": i + e });
 	}
 }
 //#endregion
 //#region src/module/wfrp4e/mutants-handbook/actions/form-items.ts
-var pa = {
+var Gr = {
 	Contortionist: "Compendium.wfrp4e-core.items.Item.TaYriYcJkFuIdBKp",
 	Frenzy: "Compendium.wfrp4e-core.items.Item.hXcfygzujgyMN1uI",
 	Painless: "Compendium.wfrp4e-core.items.Item.wMwSRDmgiF2IdCJr"
 };
-function ma(t, n, r) {
+function Kr(t, n, r) {
 	let i = /^(.*) (\d+)$/.exec(t), a = i?.[1] ?? t, o = i?.[2] ?? (a === "Fear" ? "1" : "");
 	return {
 		effects: [],
@@ -4975,28 +3842,28 @@ function ma(t, n, r) {
 		type: n
 	};
 }
-async function ha(t, n, r) {
-	let i = Reflect.get(globalThis, "fromUuid"), a = (pa[t] ? await i?.(pa[t]) : void 0)?.toObject?.() ?? ma(t, n, r);
+async function qr(t, n, r) {
+	let i = Reflect.get(globalThis, "fromUuid"), a = (Gr[t] ? await i?.(Gr[t]) : void 0)?.toObject?.() ?? Kr(t, n, r);
 	delete a._id;
-	let o = U(a.flags) ? a.flags : {};
+	let o = R(a.flags) ? a.flags : {};
 	return a.flags = o, o[e] = {
 		automationPhase: "mutation-phase-5",
 		mutationForm: r
 	}, a;
 }
-async function ga(e, t, n) {
-	n.length && await e.createEmbeddedDocuments?.("Item", await Promise.all(n.map(([e, n]) => ha(e, n, t))));
+async function Jr(e, t, n) {
+	n.length && await e.createEmbeddedDocuments?.("Item", await Promise.all(n.map(([e, n]) => qr(e, n, t))));
 }
-function _a(e) {
-	return Array.isArray(e.grants) ? e.grants.filter(U) : [];
+function Yr(e) {
+	return Array.isArray(e.grants) ? e.grants.filter(R) : [];
 }
-async function va(t, n, r) {
+async function Xr(t, n, r) {
 	let i = Reflect.get(globalThis, "fromUuid"), a = [];
-	for (let t of _a(r)) {
+	for (let t of Yr(r)) {
 		let r = (typeof t.sourceUuid == "string" ? await i?.(t.sourceUuid) : void 0)?.toObject?.();
 		if (!r) continue;
 		delete r._id;
-		let o = U(r.flags) ? r.flags : {};
+		let o = R(r.flags) ? r.flags : {};
 		r.flags = o, o[e] = {
 			automationPhase: "mutation-phase-5",
 			mutationForm: n
@@ -5004,9 +3871,9 @@ async function va(t, n, r) {
 	}
 	a.length && await t.createEmbeddedDocuments?.("Item", a);
 }
-function ya(e) {
-	return (Array.isArray(e.modifiers) ? e.modifiers.filter(U) : []).flatMap((e) => {
-		let t = q(e.value, NaN);
+function Zr(e) {
+	return (Array.isArray(e.modifiers) ? e.modifiers.filter(R) : []).flatMap((e) => {
+		let t = K(e.value, NaN);
 		return Number.isFinite(t) ? e.kind === "characteristic" && typeof e.characteristic == "string" ? [{
 			key: `system.characteristics.${e.characteristic}.modifier`,
 			mode: 2,
@@ -5020,20 +3887,20 @@ function ya(e) {
 		}] : [] : [];
 	});
 }
-function ba(e) {
-	let t = Array.isArray(e.modifiers) ? e.modifiers.filter((e) => U(e) && e.kind === "test") : [];
-	if (t.length) return J("Resolve Mutant's Handbook form", "dialog", `const modifiers = ${JSON.stringify(t)};\nconst skillName = args.skill?.name ?? args.test?.item?.name ?? "";\nconst characteristic = args.characteristic ?? args.test?.characteristicKey;\nfor (const modifier of modifiers) {\n  const matchesSkill = (modifier.skills ?? []).some(name => skillName === name || skillName.startsWith(name + " ("));\n  const matchesCharacteristic = (modifier.characteristics ?? []).includes(characteristic);\n  if (!matchesSkill && !matchesCharacteristic) continue;\n  const current = Number(args.fields.modifier);\n  const next = current + Number(modifier.value);\n  if (Number.isFinite(next)) args.fields.modifier = next;\n}`);
+function Qr(e) {
+	let t = Array.isArray(e.modifiers) ? e.modifiers.filter((e) => R(e) && e.kind === "test") : [];
+	if (t.length) return q("Resolve Mutant's Handbook form", "dialog", `const modifiers = ${JSON.stringify(t)};\nconst skillName = args.skill?.name ?? args.test?.item?.name ?? "";\nconst characteristic = args.characteristic ?? args.test?.characteristicKey;\nfor (const modifier of modifiers) {\n  const matchesSkill = (modifier.skills ?? []).some(name => skillName === name || skillName.startsWith(name + " ("));\n  const matchesCharacteristic = (modifier.characteristics ?? []).includes(characteristic);\n  if (!matchesSkill && !matchesCharacteristic) continue;\n  const current = Number(args.fields.modifier);\n  const next = current + Number(modifier.value);\n  if (Number.isFinite(next)) args.fields.modifier = next;\n}`);
 }
 //#endregion
 //#region src/module/wfrp4e/mutants-handbook/actions/forms.ts
-var xa = [
+var $r = [
 	"ws",
 	"bs",
 	"s",
 	"t",
 	"ag",
 	"dex"
-], Sa = {
+], ei = {
 	A7OLAWKXWUfh0UGU: "ethereal",
 	XheCM6GZG8FhAoGp: "mirror-image",
 	NDDLEunW5biRvTfy: "shapeshifter",
@@ -5042,28 +3909,28 @@ var xa = [
 	jPlCrsK3hTgkHsTR: "warp-spasm",
 	mNNavbJayRcsyeXJ: "werebeast"
 };
-function Ca(e) {
+function ti(e) {
 	try {
 		return e.items ? [...e.items] : [];
 	} catch {
 		return [];
 	}
 }
-async function wa(t, n) {
-	let r = Ca(t).filter((t) => t.flags?.[e]?.mutationForm === n).flatMap((e) => e.id ? [e.id] : []), i = [...t.effects ?? []].filter((t) => t.flags?.[e]?.mutationForm === n).flatMap((e) => e.id ? [e.id] : []);
+async function ni(t, n) {
+	let r = ti(t).filter((t) => t.flags?.[e]?.mutationForm === n).flatMap((e) => e.id ? [e.id] : []), i = [...t.effects ?? []].filter((t) => t.flags?.[e]?.mutationForm === n).flatMap((e) => e.id ? [e.id] : []);
 	return r.length && await t.deleteEmbeddedDocuments?.("Item", r), i.length && await t.deleteEmbeddedDocuments?.("ActiveEffect", i), r.length > 0 || i.length > 0;
 }
-async function Ta(e, t) {
-	let n = Sa[t];
-	!n || W(e, t) > 0 || await wa(e, n);
+async function ri(e, t) {
+	let n = ei[t];
+	!n || B(e, t) > 0 || await ni(e, n);
 }
-function Ea(t, n, r, i, a) {
+function ii(t, n, r, i, a) {
 	let o = `const ids = (this.actor.items ?? []).filter(item => item.flags?.["${e}"]?.mutationForm === "${n}").map(item => item.id);\nif (ids.length) await this.actor.deleteEmbeddedDocuments("Item", ids);`;
 	return {
 		changes: [],
 		description: r,
 		disabled: !1,
-		duration: Y(i, a),
+		duration: J(i, a),
 		flags: {
 			[e]: {
 				actionId: t.id,
@@ -5076,7 +3943,7 @@ function Ea(t, n, r, i, a) {
 		name: `${t.mutationName} — Active Form`,
 		statuses: [],
 		system: {
-			scriptData: [J("Resolve Mutant's Handbook form", "deleteEffect", o)],
+			scriptData: [q("Resolve Mutant's Handbook form", "deleteEffect", o)],
 			sourceData: {},
 			transferData: {
 				area: { aura: {} },
@@ -5092,11 +3959,11 @@ function Ea(t, n, r, i, a) {
 		type: "base"
 	};
 }
-function Da(e, t) {
-	let n = (U(e.selections) ? e.selections : {})[t];
+function ai(e, t) {
+	let n = (R(e.selections) ? e.selections : {})[t];
 	return String(Array.isArray(n) ? n[0] ?? "" : n ?? "");
 }
-function Oa(e) {
+function oi(e) {
 	return {
 		amphibian: {
 			move: 3,
@@ -5123,19 +3990,19 @@ function Oa(e) {
 		"rodent-rabbit": { move: 5 }
 	}[e] ?? {};
 }
-async function ka(e, t, n, r, i, a) {
-	if (await wa(n, e), t === "revert") return;
-	let o = Di(Ti(n, r.mutationId)), s = q(i?.result?.SL), c = Ea(r, e, r.outcome), l = [];
-	if (e === "ethereal") c = Ea(r, e, r.outcome, Math.max(1, q(n.system?.characteristics?.wp?.bonus) + s)), l = [["Ethereal", "trait"]];
+async function si(e, t, n, r, i, a) {
+	if (await ni(n, e), t === "revert") return;
+	let o = cr(or(n, r.mutationId)), s = K(i?.result?.SL), c = ii(r, e, r.outcome), l = [];
+	if (e === "ethereal") c = ii(r, e, r.outcome, Math.max(1, K(n.system?.characteristics?.wp?.bonus) + s)), l = [["Ethereal", "trait"]];
 	else if (e === "mirror-image") {
-		let t = Math.max(1, W(n, r.mutationId)), i = Math.max(1, q(n.system?.characteristics?.wp?.value) + s * 10) * 2 ** (t - 1);
-		c = Ea(r, e, r.outcome, void 0, i * 60);
+		let t = Math.max(1, B(n, r.mutationId)), i = Math.max(1, K(n.system?.characteristics?.wp?.value) + s * 10) * 2 ** (t - 1);
+		c = ii(r, e, r.outcome, void 0, i * 60);
 	} else if (e === "shapeshifter") {
-		let t = Math.max(1, q(n.system?.characteristics?.t?.bonus) + s);
-		c = Ea(r, e, r.outcome, void 0, t * 3600);
+		let t = Math.max(1, K(n.system?.characteristics?.t?.bonus) + s);
+		c = ii(r, e, r.outcome, void 0, t * 3600);
 	} else if (e === "skinwalker" && a) {
-		c.changes = xa.flatMap((e) => {
-			let t = q(a.system?.characteristics?.[e]?.value) - q(n.system?.characteristics?.[e]?.value);
+		c.changes = $r.flatMap((e) => {
+			let t = K(a.system?.characteristics?.[e]?.value) - K(n.system?.characteristics?.[e]?.value);
 			return t ? [{
 				key: `system.characteristics.${e}.modifier`,
 				mode: 2,
@@ -5143,7 +4010,7 @@ async function ka(e, t, n, r, i, a) {
 				value: String(t)
 			}] : [];
 		});
-		let e = q(a.system?.details?.move?.value, NaN);
+		let e = K(a.system?.details?.move?.value, NaN);
 		Number.isFinite(e) && c.changes.push({
 			key: "system.details.move.value",
 			mode: 5,
@@ -5151,17 +4018,17 @@ async function ka(e, t, n, r, i, a) {
 			value: String(e)
 		});
 	} else if (e === "swarmform") {
-		let e = Oa(Da(o, "swarm-source"));
+		let e = oi(ai(o, "swarm-source"));
 		c.changes = [...e.move === void 0 ? [] : [{
 			key: "system.details.move.value",
 			mode: 5,
 			priority: null,
 			value: String(e.move)
-		}], ...Da(o, "swarm-size") ? [{
+		}], ...ai(o, "swarm-size") ? [{
 			key: "system.details.size.value",
 			mode: 5,
 			priority: null,
-			value: Da(o, "swarm-size")
+			value: ai(o, "swarm-size")
 		}] : []], l = [["Swarm", "trait"], ...e.trait ? [[e.trait, "trait"]] : []];
 	} else if (e === "warp-spasm") {
 		l = [
@@ -5174,61 +4041,61 @@ async function ka(e, t, n, r, i, a) {
 		let e = c.system;
 		e.scriptData = [
 			...e.scriptData ?? [],
-			J("Resolve Mutant's Handbook form", "endCombat", "return this.effect.delete();"),
-			J("Resolve Mutant's Handbook form", "deleteEffect", "await this.actor.addCondition(\"fatigued\", 1);")
+			q("Resolve Mutant's Handbook form", "endCombat", "return this.effect.delete();"),
+			q("Resolve Mutant's Handbook form", "deleteEffect", "await this.actor.addCondition(\"fatigued\", 1);")
 		];
 	} else if (e === "werebeast") {
-		c.changes = ya(o);
-		let t = ba(o);
+		c.changes = Zr(o);
+		let t = Qr(o);
 		if (t) {
 			let e = c.system;
 			e.scriptData = [...e.scriptData ?? [], t];
 		}
-		await va(n, e, o);
+		await Xr(n, e, o);
 	}
-	await ga(n, e, l), await n.createEmbeddedDocuments?.("ActiveEffect", [c]);
+	await Jr(n, e, l), await n.createEmbeddedDocuments?.("ActiveEffect", [c]);
 }
 //#endregion
 //#region src/module/wfrp4e/mutants-handbook/actions/companions.ts
-function Aa(e, t) {
-	let n = (U(e.selections) ? e.selections : {})[t];
+function ci(e, t) {
+	let n = (R(e.selections) ? e.selections : {})[t];
 	return String(Array.isArray(n) ? n[0] ?? "" : n ?? "");
 }
-function ja(e) {
+function li(e) {
 	return e.split("-").filter(Boolean).map((e) => `${e[0]?.toUpperCase() ?? ""}${e.slice(1)}`).join(" ");
 }
-function Ma(e, t, n) {
-	let r = U(e.characteristics) ? e.characteristics : {};
+function di(e, t, n) {
+	let r = R(e.characteristics) ? e.characteristics : {};
 	e.characteristics = r;
-	let i = U(r[t]) ? r[t] : {};
+	let i = R(r[t]) ? r[t] : {};
 	r[t] = i, i.initial = n, i.advances = 0, i.modifier = 0, i.value = n;
 }
-function Na(e, t) {
+function fi(e, t) {
 	return [
 		"personality",
 		"motivation",
 		"short-ambition",
 		"long-ambition"
 	].flatMap((n) => {
-		let r = Aa(e, `${t}-${n}`);
-		return r ? [`<p><strong>${ja(n)}:</strong> ${r}</p>`] : [];
+		let r = ci(e, `${t}-${n}`);
+		return r ? [`<p><strong>${li(n)}:</strong> ${r}</p>`] : [];
 	}).join("");
 }
-function Pa(e, t, n) {
+function pi(e, t, n) {
 	let r = e.name ?? "Mutant";
 	if (t === "spectral-companion") {
-		let e = Aa(n, "companion-type") || "ghost";
+		let e = ci(n, "companion-type") || "ghost";
 		return {
 			flags: {},
 			img: "icons/magic/death/undead-ghost-scream-teal.webp",
-			name: Aa(n, "companion-name") || `${r}'s ${ja(e)}`,
-			system: { details: { notes: { value: Na(n, "companion") } } },
+			name: ci(n, "companion-name") || `${r}'s ${li(e)}`,
+			system: { details: { notes: { value: fi(n, "companion") } } },
 			type: "creature"
 		};
 	}
 	let i = e.toObject?.() ?? {};
 	delete i._id, i.effects = [], i.flags = {}, i.folder = null, i.items = [], i.type = "creature";
-	let a = U(i.system) ? i.system : {};
+	let a = R(i.system) ? i.system : {};
 	if (i.system = a, t === "bodysnatcher-drone") {
 		i.name = `${r}'s Bodysnatcher Drone`;
 		for (let [e, t] of Object.entries({
@@ -5242,13 +4109,13 @@ function Pa(e, t, n) {
 			t: 0,
 			wp: 0,
 			ws: 30
-		})) Ma(a, e, t);
+		})) di(a, e, t);
 		return a.details = {
-			...U(a.details) ? a.details : {},
+			...R(a.details) ? a.details : {},
 			move: { value: 2 },
 			size: { value: "tiny" }
 		}, a.status = {
-			...U(a.status) ? a.status : {},
+			...R(a.status) ? a.status : {},
 			wounds: {
 				max: 1,
 				value: 1
@@ -5298,14 +4165,14 @@ function Pa(e, t, n) {
 		"fel"
 	]) {
 		let n = t === "t" || t === "fel" ? 20 : t === "ag" ? Infinity : 30, r = Number(e.system?.characteristics?.[t]?.value) || 0;
-		Ma(a, t, Number.isFinite(n) ? Math.max(0, r - n) : 0);
+		di(a, t, Number.isFinite(n) ? Math.max(0, r - n) : 0);
 	}
 	return a.details = {
-		...U(a.details) ? a.details : {},
+		...R(a.details) ? a.details : {},
 		move: { value: 0 },
-		notes: { value: Na(n, "twin") }
+		notes: { value: fi(n, "twin") }
 	}, a.status = {
-		...U(a.status) ? a.status : {},
+		...R(a.status) ? a.status : {},
 		fate: {
 			max: 0,
 			value: 0
@@ -5316,37 +4183,37 @@ function Pa(e, t, n) {
 		}
 	}, i;
 }
-function Fa(t, n) {
+function mi(t, n) {
 	let r = t.toObject?.() ?? {};
 	delete r._id, r.name = `${t.name ?? "Mutant"}'s Symbiotic Twin`, Array.isArray(r.items) && (r.items = r.items.filter((t) => {
-		if (!U(t) || !U(t.flags)) return !0;
+		if (!R(t) || !R(t.flags)) return !0;
 		let n = t.flags[e];
-		return !U(n) || !U(n.mutationAction) ? !0 : n.mutationAction.actionId !== "symbiotic-twin-manifest";
+		return !R(n) || !R(n.mutationAction) ? !0 : n.mutationAction.actionId !== "symbiotic-twin-manifest";
 	}));
-	let i = U(r.system) ? r.system : {};
+	let i = R(r.system) ? r.system : {};
 	r.system = i;
-	let a = U(i.details) ? i.details : {};
-	return i.details = a, a.notes = { value: Na(n, "twin") }, r;
+	let a = R(i.details) ? i.details : {};
+	return i.details = a, a.notes = { value: fi(n, "twin") }, r;
 }
-function Ia(t, n) {
-	let r = t.flags?.[e]?.mutationCompanions, i = U(r) ? r[n] : void 0;
-	return typeof i == "string" ? [{ uuid: i }] : Array.isArray(i) ? i.flatMap((e) => U(e) && typeof e.uuid == "string" ? [{
+function hi(t, n) {
+	let r = t.flags?.[e]?.mutationCompanions, i = R(r) ? r[n] : void 0;
+	return typeof i == "string" ? [{ uuid: i }] : Array.isArray(i) ? i.flatMap((e) => R(e) && typeof e.uuid == "string" ? [{
 		mutationItemId: typeof e.mutationItemId == "string" ? e.mutationItemId : void 0,
 		uuid: e.uuid
 	}] : []) : [];
 }
-async function La(e, t) {
-	let n = Ia(e, t), r = Reflect.get(globalThis, "fromUuid");
+async function gi(e, t) {
+	let n = hi(e, t), r = Reflect.get(globalThis, "fromUuid");
 	return r ? (await Promise.all(n.map(async (e) => await r(e.uuid) ? e : void 0))).filter((e) => e !== void 0) : n;
 }
-function Ra(e, t) {
+function _i(e, t) {
 	let n = new Set(t.flatMap((e) => e.mutationItemId ? [e.mutationItemId] : []));
 	return e.find((e) => !e.id || !n.has(e.id)) ?? e[t.length];
 }
-async function za(t, n, r) {
-	let i = Ei(n, r.mutationId), a = await La(n, t);
+async function vi(t, n, r) {
+	let i = sr(n, r.mutationId), a = await gi(n, t);
 	if (!i.length || a.length >= i.length) return;
-	let o = Ra(i, a), s = Di(o), c = t === "symbiotic-twin" ? Fa(n, s) : Pa(n, t, s), l = U(c.flags) ? c.flags : {};
+	let o = _i(i, a), s = cr(o), c = t === "symbiotic-twin" ? mi(n, s) : pi(n, t, s), l = R(c.flags) ? c.flags : {};
 	c.flags = l, l[e] = {
 		automationPhase: "mutation-phase-5",
 		mutationCompanion: {
@@ -5361,122 +4228,122 @@ async function za(t, n, r) {
 		uuid: d
 	}] }), t === "symbiotic-twin" && (await n.update?.({ [`flags.${e}.mutationTwinUuid`]: d }), await u?.update?.({ [`flags.${e}.mutationTwinUuid`]: n.uuid ?? n.id })));
 }
-var Ba = /* @__PURE__ */ new Set();
-function Va() {
+var yi = /* @__PURE__ */ new Set();
+function bi() {
 	Hooks.on("updateActor", (t, n, r, i) => {
 		let a = Reflect.get(globalThis, "game");
-		if (typeof i == "string" && a?.user?.id !== i || !U(t) || !U(n)) return;
-		let o = t, s = o.uuid ?? o.id, c = o.flags?.[e]?.mutationTwinUuid, l = U(n.system) ? n.system : void 0, u = U(l?.status) ? l.status : void 0, d = U(u?.wounds) ? u.wounds : void 0, f = n["system.status.wounds.value"] ?? d?.value;
-		if (typeof s != "string" || typeof c != "string" || !Number.isFinite(Number(f)) || Ba.has(s)) return;
+		if (typeof i == "string" && a?.user?.id !== i || !R(t) || !R(n)) return;
+		let o = t, s = o.uuid ?? o.id, c = o.flags?.[e]?.mutationTwinUuid, l = R(n.system) ? n.system : void 0, u = R(l?.status) ? l.status : void 0, d = R(u?.wounds) ? u.wounds : void 0, f = n["system.status.wounds.value"] ?? d?.value;
+		if (typeof s != "string" || typeof c != "string" || !Number.isFinite(Number(f)) || yi.has(s)) return;
 		let p = Reflect.get(globalThis, "fromUuid");
-		Ba.add(c), p?.(c).then((e) => e?.update?.({ "system.status.wounds.value": Number(f) })).finally(() => Ba.delete(c));
+		yi.add(c), p?.(c).then((e) => e?.update?.({ "system.status.wounds.value": Number(f) })).finally(() => yi.delete(c));
 	});
 }
 //#endregion
 //#region src/module/wfrp4e/mutants-handbook/actions/outcomes.ts
-var Ha = /* @__PURE__ */ new WeakSet();
-function Ua(e) {
+var xi = /* @__PURE__ */ new WeakSet();
+function Si(e) {
 	return e ? typeof e.failed == "boolean" ? !e.failed : e.result?.outcome !== "failure" : !0;
 }
-function Wa(e, t) {
-	return e.when === "always" ? !0 : e.when === "success" ? Ua(t) : !Ua(t);
+function Ci(e, t) {
+	return e.when === "always" ? !0 : e.when === "success" ? Si(t) : !Si(t);
 }
-function Ga(e, t, n) {
+function wi(e, t, n) {
 	return e === "self" ? [t] : n;
 }
-async function Ka(e, t) {
+async function Ti(e, t) {
 	let n = Reflect.get(globalThis, "Roll");
 	n && await (await new n(e).evaluate()).toMessage?.({ flavor: t });
 }
-async function qa(e, t, n) {
+async function Ei(e, t, n) {
 	for (let r of t) {
 		let t = {
 			appendTitle: ` — ${n} follow-up`,
 			fields: { difficulty: e.difficulty }
 		}, i = e.skill ? await r.setupSkill?.(e.skill, t) : await r.setupCharacteristic?.(e.characteristic ?? "wp", t);
-		if (i?.roll && (await i.roll(), !Ua(i))) {
+		if (i?.roll && (await i.roll(), !Si(i))) {
 			for (let t of e.failureConditions) {
 				let e = t.condition === "broken" && r.has?.("Skittish") ? 3 : t.amount ?? 1;
 				await r.addCondition?.(t.condition, e);
 			}
-			e.failureRoll && await Ka(e.failureRoll.formula, e.failureRoll.label);
+			e.failureRoll && await Ti(e.failureRoll.formula, e.failureRoll.label);
 		}
 	}
 }
-function Ja(e, t, n) {
+function Di(e, t, n) {
 	let r = Number(n?.result?.SL) || 0;
 	return e === "sl" ? Math.max(0, r) : e === "fellowship-plus-sl" ? Math.max(0, (Number(t.system?.characteristics?.fel?.value) || 0) + r) : e;
 }
-async function Ya(e, t, n, r, i) {
-	if (e.kind === "roll") return Ka(e.formula, e.label);
-	if (e.kind === "follow-up-test") return qa(e, n, i.name);
-	if (e.kind === "companion") return za(e.companion, t, i);
-	if (e.kind === "form") return ka(e.form, e.mode, t, i, r, n[0]);
-	let a = Ga(e.subject, t, n);
+async function Oi(e, t, n, r, i) {
+	if (e.kind === "roll") return Ti(e.formula, e.label);
+	if (e.kind === "follow-up-test") return Ei(e, n, i.name);
+	if (e.kind === "companion") return vi(e.companion, t, i);
+	if (e.kind === "form") return si(e.form, e.mode, t, i, r, n[0]);
+	let a = wi(e.subject, t, n);
 	if (e.kind === "condition") {
 		for (let n of a) {
-			let i = Ja(e.amount ?? 1, t, r);
+			let i = Di(e.amount ?? 1, t, r);
 			await n.addCondition?.(e.condition, i);
 		}
 		return;
 	}
 	if (e.kind === "remove-condition") {
-		let n = Ja(e.amount ?? 1, t, r);
+		let n = Di(e.amount ?? 1, t, r);
 		for (let t of a) for (let r = 0; r < n; r += 1) await t.removeCondition?.(e.condition);
 		return;
 	}
 	if (e.kind === "heal") {
-		let n = Ja(e.amount, t, r);
+		let n = Di(e.amount, t, r);
 		for (let e of a) await e.modifyWounds?.(n);
 		return;
 	}
-	if (e.kind === "effect") for (let n of a) await fa(e.effect, n, i, r, t);
+	if (e.kind === "effect") for (let n of a) await Wr(e.effect, n, i, r, t);
 }
-function Xa(e) {
+function ki(e) {
 	Reflect.get(globalThis, "ui")?.notifications?.warn?.(e);
 }
-function Za(e) {
-	let t = ta(e);
-	return !!(t && Dt(t).length);
+function Ai(e) {
+	let t = Nr(e);
+	return !!(t && D(t).length);
 }
-async function Qa(e) {
+async function ji(e) {
 	if (typeof e != "object" || !e) return !1;
 	let t = e;
-	if (Ha.has(t) || na(t)) return !1;
-	let n = ta(t), r = n ? Tt(n) : void 0;
+	if (xi.has(t) || Pr(t)) return !1;
+	let n = Nr(t), r = n ? ft(n) : void 0;
 	if (!r) return !1;
-	let i = t.system?.test, a = await oa(t);
+	let i = t.system?.test, a = await Rr(t);
 	if (!a) return !1;
-	let o = Dt(r.id).filter((e) => Wa(e, i)), s = aa(i);
-	if (o.some((e) => e.kind !== "roll" && e.subject === "targets" || e.kind === "form" && e.source === "targets") && s.length === 0) return Xa(`Target one or more Actors before applying ${r.name}.`), !1;
-	Ha.add(t);
+	let o = D(r.id).filter((e) => Ci(e, i)), s = Lr(i);
+	if (o.some((e) => e.kind !== "roll" && e.subject === "targets" || e.kind === "form" && e.source === "targets") && s.length === 0) return ki(`Target one or more Actors before applying ${r.name}.`), !1;
+	xi.add(t);
 	try {
-		for (let e of o) await Ya(e, a, s, i, r);
-		return await ra(t), !0;
+		for (let e of o) await Oi(e, a, s, i, r);
+		return await Fr(t), !0;
 	} finally {
-		Ha.delete(t);
+		xi.delete(t);
 	}
 }
 //#endregion
 //#region src/module/wfrp4e/mutants-handbook/actions/index.ts
-var $a = /* @__PURE__ */ new WeakSet();
-function eo(e, t, n) {
-	let r = Tt(n), i = vi(e), a = yi(t);
+var Mi = /* @__PURE__ */ new WeakSet();
+function Ni(e, t, n) {
+	let r = ft(n), i = er(e), a = tr(t);
 	if (!r || !i || !a) return;
-	let o = Si(a);
+	let o = rr(a);
 	if (!(o !== void 0 && o !== n)) return {
 		action: r,
 		actor: i,
 		item: a
 	};
 }
-function to(e, t) {
+function Pi(e, t) {
 	Reflect.get(globalThis, "ui")?.notifications?.warn?.(`${t.name ?? "This Actor"} cannot use ${e.name}: its use limit or Advantage cost is not available.`);
 }
-function no(e, t, n) {
+function Fi(e, t, n) {
 	let r = e.test?.bonusMultiplier ?? 1, i = e.test?.bonusCharacteristic;
 	if (r <= 1 || !i) return;
-	let a = xi(n), o = `mutationActionDamage:${e.id}`;
+	let a = z(n), o = `mutationActionDamage:${e.id}`;
 	if (typeof a[o] == "number") return;
 	let s = Number(t.system?.characteristics?.[i]?.bonus);
 	if (!Number.isFinite(s)) return;
@@ -5485,61 +4352,61 @@ function no(e, t, n) {
 	let l = Number(n.preData.additionalDamage) || 0;
 	n.preData.additionalDamage = l + c, a[o] = c;
 }
-function ro(e, t) {
+function Ii(e, t) {
 	let n = t.result;
-	if (!n || $a.has(n)) return;
-	let r = Number(xi(t)[`mutationActionDamage:${e.id}`]), i = Number(n.damage);
+	if (!n || Mi.has(n)) return;
+	let r = Number(z(t)[`mutationActionDamage:${e.id}`]), i = Number(n.damage);
 	!Number.isFinite(r) || r === 0 || !Number.isFinite(i) || (n.damage = i + r, n.breakdown?.damage?.other?.push({
 		label: e.name,
 		value: r
-	}), $a.add(n));
+	}), Mi.add(n));
 }
-function io(e, t, n, r) {
-	let i = eo(e, t, n);
-	if (!i || !U(r)) return;
+function Li(e, t, n, r) {
+	let i = Ni(e, t, n);
+	if (!i || !R(r)) return;
 	let { action: a, actor: o, item: s } = i;
-	if (!Hi(a, o, s)) {
-		r.abort = !0, to(a, o);
+	if (!br(a, o, s)) {
+		r.abort = !0, Pi(a, o);
 		return;
 	}
-	let c = U(r.fields) ? r.fields : {};
+	let c = R(r.fields) ? r.fields : {};
 	r.fields = c;
-	let l = Ui(a, s);
+	let l = xr(a, s);
 	l && (c.difficulty = l);
-	let u = U(r.flags) ? r.flags : {};
+	let u = R(r.flags) ? r.flags : {};
 	r.flags = u, u.mutationActionId = a.id;
 }
-async function ao(e, t, n, r) {
-	let i = eo(e, t, n), a = bi(r);
+async function Ri(e, t, n, r) {
+	let i = Ni(e, t, n), a = nr(r);
 	if (!i || !a) return !1;
-	let { action: o, actor: s, item: c } = i, l = xi(a);
+	let { action: o, actor: s, item: c } = i, l = z(a);
 	l.mutationActionId = o.id, l.mutationActionItemUuid = c.uuid ?? c.id, a.preData ??= {}, a.preData.options ??= {}, a.preData.options.mutationActionActorUuid = s.uuid ?? s.id, a.preData.options.mutationActionId = o.id, a.preData.options.mutationActionItemUuid = c.uuid ?? c.id, a.preData.options.mutationActionUseId ??= globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random()}`;
-	let u = await Ki(o, s, c, a);
-	return u ? no(o, s, a) : to(o, s), u;
+	let u = await wr(o, s, c, a);
+	return u ? Fi(o, s, a) : Pi(o, s), u;
 }
-async function oo(e, t, n, r) {
-	let i = eo(e, t, n), a = bi(r);
-	!i || !a || (ro(i.action, a), $i(i.action, i.actor, i.item, a));
+async function zi(e, t, n, r) {
+	let i = Ni(e, t, n), a = nr(r);
+	!i || !a || (Ii(i.action, a), jr(i.action, i.actor, i.item, a));
 }
-function so(e, t, n) {
+function Bi(e, t, n) {
 	let r = globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random()}`;
 	return {
 		appendTitle: ` — ${e.mutationName}: ${e.name}`,
-		fields: { difficulty: Ui(e, n) ?? "challenging" },
+		fields: { difficulty: xr(e, n) ?? "challenging" },
 		mutationActionId: e.id,
 		mutationActionActorUuid: t.uuid ?? t.id,
 		mutationActionItemUuid: n.uuid ?? n.id,
 		mutationActionUseId: r
 	};
 }
-async function co(e, t, n) {
-	let r = so(e, t, n);
+async function Vi(e, t, n) {
+	let r = Bi(e, t, n);
 	if (t.setupTrait) return t.setupTrait(n, r);
 	if (e.test && "skill" in e.test && t.setupSkill) return t.setupSkill(e.test.skill, r);
 	if (e.test && "characteristic" in e.test && t.setupCharacteristic) return t.setupCharacteristic(e.test.characteristic, r);
 }
-async function lo(e, t, n) {
-	let r = Reflect.get(globalThis, "game"), i = ea(e), a = r?.wfrp4e?.utility?.chatDataSetup?.(i) ?? { content: i };
+async function Hi(e, t, n) {
+	let r = Reflect.get(globalThis, "game"), i = Mr(e), a = r?.wfrp4e?.utility?.chatDataSetup?.(i) ?? { content: i };
 	a.flags = {
 		...typeof a.flags == "object" && a.flags ? a.flags : {},
 		"fvtt-wfrp-ratter": { mutationActionOutcome: {
@@ -5549,53 +4416,51 @@ async function lo(e, t, n) {
 		} }
 	}, await Reflect.get(globalThis, "ChatMessage")?.create?.(a);
 }
-async function uo(e, t, n) {
-	let r = eo(e, t, n);
+async function Ui(e, t, n) {
+	let r = Ni(e, t, n);
 	if (!r) return;
-	let { action: i, actor: a, item: o } = r, s = i.test ? await co(i, a, o) : { context: so(i, a, o) };
-	if (s && await ao(a, o, i.id, s)) {
+	let { action: i, actor: a, item: o } = r, s = i.test ? await Vi(i, a, o) : { context: Bi(i, a, o) };
+	if (s && await Ri(a, o, i.id, s)) {
 		if (i.test && s.roll) {
 			await s.roll();
 			return;
 		}
-		await lo(i, a, o);
+		await Hi(i, a, o);
 	}
 }
 //#endregion
 //#region src/module/api/create-module-api.ts
-function fo() {
+function Wi() {
 	return {
-		applyMutationActionOutcome: Qa,
-		checkMutantsHandbookCorruption: ur,
+		applyMutationActionOutcome: ji,
+		checkMutantsHandbookCorruption: $n,
 		id: e,
 		logStatus() {
 			console.log(`${t} is loaded.`);
 		},
-		prepareMutationActionDialog: io,
-		prepareMutationAcquisition: gi,
-		recordMutationActionUse: ao,
+		prepareMutationActionDialog: Li,
+		recordMutationActionUse: Ri,
 		reconcileMutationAutomation: P,
-		removeMutationGrantOwner: Dn,
-		resolveMutationActionTest: oo,
-		resolveOwnedMutationAcquisition: _i,
+		removeMutationGrantOwner: pn,
+		resolveMutationActionTest: zi,
 		title: t,
-		useMutationAction: uo
+		useMutationAction: Ui
 	};
 }
 //#endregion
 //#region src/module/api/register-module-api.ts
-function po() {
+function Gi() {
 	if (!game) throw Error("Foundry game global is unavailable during module API registration.");
 	let t = game.modules.get(e);
 	if (!t) throw Error(`Foundry module registry entry was not found for ${e}.`);
-	t.api = fo();
+	t.api = Wi();
 }
 //#endregion
 //#region src/module/settings.ts
-var mo = "useMutantsHandbookMutations";
-function ho() {
+var Ki = "useMutantsHandbookMutations";
+function qi() {
 	if (!game) throw Error("Foundry game global is unavailable during settings registration.");
-	game.settings.register(e, mo, {
+	game.settings.register(e, Ki, {
 		config: !0,
 		default: !1,
 		hint: "FVTT_WFRP_RATTER.Settings.MutantsHandbook.Hint",
@@ -5604,107 +4469,155 @@ function ho() {
 		type: Boolean
 	});
 }
-function go() {
-	return game?.settings.get(e, mo) === !0;
+function Ji() {
+	return game?.settings.get(e, Ki) === !0;
 }
 //#endregion
 //#region src/module/wfrp4e/mutants-handbook/context-options.ts
-var _o = [
-	"CHATOPT.UseFortuneReroll",
-	"CHATOPT.Reroll",
-	"CHATOPT.UseFortuneSL",
-	"CHATOPT.DarkDeal",
-	"CHATOPT.StartOpposed",
-	"CHATOPT.DefendOpposed",
-	"CHATOPT.CompleteUnopposed",
-	"CHATOPT.EditTest"
-];
-function vo(e) {
-	let t = e.dataset.messageId;
-	return (t ? game?.messages.get(t)?.system.test : void 0)?.options?.[s] === !0;
-}
-function yo(e) {
+function Yi(e) {
 	let t = e.dataset.messageId;
 	return t ? game?.messages.get(t) : void 0;
 }
-function bo(e) {
-	let t = e.condition;
-	e.condition = (e) => vo(e) ? !1 : t ? t(e) : !0;
-}
-function xo() {
+function Xi() {
 	Hooks.on("getChatMessageContextOptions", (e, t) => {
-		if (!game) return;
-		let n = new Set(_o.map((e) => game.i18n.localize(e)));
-		for (let e of t) n.has(e.name) && bo(e);
-		t.push({
+		game && t.push({
 			callback: async (e) => {
-				let t = yo(e);
-				t && await Qa(t);
+				let t = Yi(e);
+				t && await ji(t);
 			},
 			condition: (e) => {
-				let t = yo(e);
-				return !!(t && t.flags?.["fvtt-wfrp-ratter"]?.mutationActionOutcomeApplied !== !0 && Za(t));
+				let t = Yi(e);
+				return !!(t && t.flags?.["fvtt-wfrp-ratter"]?.mutationActionOutcomeApplied !== !0 && Ai(t));
 			},
 			name: "Apply Mutant’s Handbook Outcome"
 		});
 	});
 }
 //#endregion
+//#region src/module/wfrp4e/mutants-handbook/mutation-drop.ts
+function Zi(e) {
+	return {
+		toughness: Number(e.system.characteristics.t.bonus),
+		willpower: Number(e.system.characteristics.wp.bonus)
+	};
+}
+function Qi(e, t) {
+	return ae(t, Zi(e));
+}
+function $i(e, t) {
+	return e.name === t.mutationName && ne(e.system.mutationType.value) === t.nature;
+}
+async function ea(e, t) {
+	for (let n of t) {
+		let t = v("ChaosSpawn", {
+			bonus: n === "physical" ? "Toughness Bonus" : "Willpower Bonus",
+			name: e.name,
+			nature: n
+		});
+		Le(t), await y(t);
+	}
+}
+async function ta(t) {
+	let n = Me(t), r = t.actor;
+	if (!n || !r) return !1;
+	let a = _(r);
+	if (a?.kind !== "mutation" || a.token !== n.token) throw Error(`${t.name} is not the pending mutation for ${r.name}.`);
+	if (!$i(t, n)) throw Error(`${t.name} no longer matches its pending mutation result.`);
+	let o = Qi(r, n.nature), s = [];
+	try {
+		t.name.trim().toLowerCase() === "chimeran curse" && (s = await ve(r));
+		let n = ce(pe(r), Zi(r));
+		await h(r, {
+			[Te]: null,
+			...n.length > 0 ? { [`flags.${e}.${i}`]: !0 } : {},
+			"system.status.corruption.value": oe(Number(r.system.status.corruption.value), o)
+		});
+		try {
+			await t.update?.({ [Ee]: null }, { skipMutationAcquisition: !0 });
+		} catch (e) {
+			console.warn(`${t.name}: could not clear its completed mutation-drop marker.`, e);
+		}
+		return await y(v("Gained", {
+			loss: o,
+			mutation: t.name,
+			name: r.name
+		})), await ea(r, n), !0;
+	} catch (e) {
+		let n = [e];
+		try {
+			await ye(r, s);
+		} catch (e) {
+			n.push(e);
+		}
+		try {
+			await r.deleteEmbeddedDocuments("Item", [t.id]);
+		} catch (e) {
+			n.push(e);
+		}
+		throw n.length > 1 ? AggregateError(n, `Failed to roll back mutation acquisition for ${r.name}.`, { cause: e }) : e;
+	}
+}
+//#endregion
 //#region src/module/wfrp4e/mutants-handbook/automation/hooks.ts
-function So(t) {
+function na(t) {
 	if (typeof t != "object" || !t) return;
 	let n = t;
 	if (n.type !== "mutation" || typeof n.id != "string" || typeof n.actor?.uuid != "string") return;
 	let r = n.flags?.[e]?.mutationAutomation;
 	return typeof r == "object" && r ? n : void 0;
 }
-function Co(t) {
+function ra(t) {
 	if (typeof t != "object" || !t) return;
 	let n = t;
 	if (typeof n.id != "string" || typeof n.actor?.uuid != "string") return;
 	let r = n.flags?.[e];
 	return typeof r?.mutationGrant == "object" || typeof r?.mutationSkillGrant == "object" ? n : void 0;
 }
-function wo(e) {
-	e.catch(Be);
+function ia(e) {
+	if (typeof e != "object" || !e) return;
+	let t = e;
+	if (!(t.type !== "mutation" || typeof t.id != "string" || typeof t.actor?.uuid != "string" || typeof t.getFlag != "function")) return Me(t) ? t : void 0;
 }
-function To(t) {
+function aa(e) {
+	e.catch(b);
+}
+function oa(t) {
 	let n = t.flags?.[e]?.mutationAutomation;
 	return typeof n == "object" && n && typeof n.definitionId == "string" ? n.definitionId : void 0;
 }
-async function Eo(e) {
-	let t = To(e);
-	t && e.actor && await Ta(e.actor, t), e.actor && await Dn(e.actor.uuid, e.id);
+async function sa(e) {
+	let t = oa(e);
+	t && e.actor && await ri(e.actor, t), e.actor && await pn(e.actor.uuid, e.id);
 }
-function Do(e) {
+function ca(e) {
 	return typeof e == "string" && game?.user.id === e;
 }
-async function Oo(e, t = {}) {
-	e.actor && (e.name.trim().toLowerCase() === "chimeran curse" && t.mutationAcquisitionHandlesChimeranRetirement !== !0 && await Te(e.actor), await P(e.actor.uuid));
+async function la(e, t = {}) {
+	e.actor && (!await ta(e) && e.name.trim().toLowerCase() === "chimeran curse" && t.mutationAcquisitionHandlesChimeranRetirement !== !0 && await ve(e.actor), await P(e.actor.uuid));
 }
-function ko() {
+function ua() {
 	Hooks.on("createItem", (e, t, n) => {
-		if (!Do(n)) return;
-		let r = So(e);
-		r?.actor && wo(Oo(r, typeof t == "object" && t ? t : {}));
+		if (!ca(n)) return;
+		let r = na(e) ?? ia(e);
+		r?.actor && aa(la(r, typeof t == "object" && t ? t : {}));
 	}), Hooks.on("deleteItem", (e, t, n) => {
-		if (!Do(n)) return;
-		let r = So(e);
+		if (!ca(n)) return;
+		let r = na(e);
 		if (r?.actor) {
-			wo(Eo(r));
+			aa(sa(r));
 			return;
 		}
-		let i = Co(e);
-		i?.actor && wo(P(i.actor.uuid));
+		let i = ra(e);
+		i?.actor && aa(P(i.actor.uuid));
 	}), Hooks.on("updateItem", (t, n, r, i) => {
-		if (!Do(i)) return;
-		let a = So(t), o = a?.flags?.[e];
-		a?.actor && (o?.mutantsHandbookRetired === !0 || o?.mutantsHandbookPossessionRemoved === !0) && wo(Eo(a));
+		if (!ca(i)) return;
+		let a = na(t), o = a?.flags?.[e];
+		a?.actor && (o?.mutantsHandbookRetired === !0 || o?.mutantsHandbookPossessionRemoved === !0) && aa(sa(a));
 	});
 }
 //#endregion
 //#region src/module/wfrp4e/mutants-handbook/automation/migration.ts
-var Ao = `${e}.ratter-11-items`, jo = "The Mutant's Handbook", Mo = new Set([
+var da = `${e}.ratter-11-items`, fa = "The Mutant's Handbook", pa = new Set([
 	"acquisition",
 	"actions",
 	"automated",
@@ -5716,74 +4629,74 @@ var Ao = `${e}.ratter-11-items`, jo = "The Mutant's Handbook", Mo = new Set([
 	"status",
 	"version"
 ]);
-function Z(e) {
+function X(e) {
 	return typeof e == "object" && !!e && !Array.isArray(e);
 }
-function Q(e) {
+function Z(e) {
 	return e.toObject();
 }
-function No(t) {
+function ma(t) {
 	let n = t.flags;
-	if (!Z(n)) return {};
+	if (!X(n)) return {};
 	let r = n[e];
-	return Z(r) ? r : {};
+	return X(r) ? r : {};
 }
-function Po(e) {
+function Q(e) {
 	let t = e.effects;
-	return Array.isArray(t) ? t.filter(Z) : [];
+	return Array.isArray(t) ? t.filter(X) : [];
 }
-function Fo(e) {
-	return Array.isArray(e) ? e.map(Fo) : Z(e) ? Object.fromEntries(Object.entries(e).sort(([e], [t]) => e.localeCompare(t)).map(([e, t]) => [e, Fo(t)])) : e;
+function ha(e) {
+	return Array.isArray(e) ? e.map(ha) : X(e) ? Object.fromEntries(Object.entries(e).sort(([e], [t]) => e.localeCompare(t)).map(([e, t]) => [e, ha(t)])) : e;
 }
-function Io(e, t) {
-	return JSON.stringify(Fo(e)) === JSON.stringify(Fo(t));
+function ga(e, t) {
+	return JSON.stringify(ha(e)) === JSON.stringify(ha(t));
 }
-function Lo(e) {
+function _a(e) {
 	let t = { ...e };
 	return delete t._key, delete t._stats, t;
 }
 function $(t) {
 	let n = t.flags;
-	if (!Z(n)) return !1;
+	if (!X(n)) return !1;
 	let r = n[e];
-	return Z(r) && typeof r.automationPhase == "string";
+	return X(r) && typeof r.automationPhase == "string";
 }
-function Ro(e, t) {
-	if (!Z(e)) return t;
-	let n = Object.fromEntries(Object.entries(e).filter(([e]) => !Mo.has(e)));
+function va(e, t) {
+	if (!X(e)) return t;
+	let n = Object.fromEntries(Object.entries(e).filter(([e]) => !pa.has(e)));
 	return {
 		...t,
 		...n
 	};
 }
-function zo(t, n) {
-	let r = No(n).mutationAutomation;
-	if (!Z(r)) return;
-	let i = No(t).mutationAutomation, a = Ro(i, r), o = Po(t).filter($), s = Po(n).filter($), c = [...s, ...Po(t).filter((e) => !$(e))], l = {};
-	return Io(i, a) || (l[`flags.${e}.mutationAutomation`] = a), Io(o.map(Lo), s.map(Lo)) || (l.effects = c), Object.keys(l).length > 0 ? l : void 0;
+function ya(t, n) {
+	let r = ma(n).mutationAutomation;
+	if (!X(r)) return;
+	let i = ma(t).mutationAutomation, a = va(i, r), o = Q(t).filter($), s = Q(n).filter($), c = [...s, ...Q(t).filter((e) => !$(e))], l = {};
+	return ga(i, a) || (l[`flags.${e}.mutationAutomation`] = a), ga(o.map(_a), s.map(_a)) || (l.effects = c), Object.keys(l).length > 0 ? l : void 0;
 }
-function Bo(e) {
-	return Z(e) ? e.type === "mutation" && typeof e.id == "string" && typeof e.name == "string" && typeof e.toObject == "function" : !1;
+function ba(e) {
+	return X(e) ? e.type === "mutation" && typeof e.id == "string" && typeof e.name == "string" && typeof e.toObject == "function" : !1;
 }
-function Vo(e) {
-	let t = No(Q(e)).mutationAutomation;
-	return Z(t) && typeof t.definitionId == "string" ? t.definitionId : void 0;
+function xa(e) {
+	let t = ma(Z(e)).mutationAutomation;
+	return X(t) && typeof t.definitionId == "string" ? t.definitionId : void 0;
 }
-function Ho(e) {
-	return No(Q(e)).sourceDocument === jo;
+function Sa(e) {
+	return ma(Z(e)).sourceDocument === fa;
 }
-function Uo(e, t) {
+function Ca(e, t) {
 	let n = /* @__PURE__ */ new Map();
 	for (let t of e) n.set(t.uuid, t);
 	for (let e of t) for (let t of e.tokens ?? []) t.actor && n.set(t.actor.uuid, t.actor);
 	return [...n.values()];
 }
-async function Wo(e, t) {
+async function wa(e, t) {
 	if (!e.deleteEmbeddedDocuments || !e.createEmbeddedDocuments) throw Error(`${e.name} does not support embedded Active Effect migration.`);
-	let n = Po(Q(e)).filter($), r = n.map((e) => e._id).filter((e) => typeof e == "string");
+	let n = Q(Z(e)).filter($), r = n.map((e) => e._id).filter((e) => typeof e == "string");
 	if (r.length !== n.length) throw Error(`${e.name} has a managed Active Effect without an ID.`);
 	r.length > 0 && await e.deleteEmbeddedDocuments("ActiveEffect", r);
-	let i = Po(Q(t)).filter($).map((e) => {
+	let i = Q(Z(t)).filter($).map((e) => {
 		let t = { ...e };
 		return delete t._key, t;
 	});
@@ -5792,17 +4705,17 @@ async function Wo(e, t) {
 		skipMutationAcquisition: !0
 	});
 }
-async function Go() {
+async function Ta() {
 	if (!game || game.user.isUniqueGM !== !0) return;
-	let e = game.packs.get(Ao);
-	if (!e) throw Error(`The required compendium ${Ao} is unavailable.`);
-	let t = (await e.getDocuments()).filter(Bo), n = new Map(t.map((e) => [Vo(e) ?? e.id, e])), r = new Map(t.map((e) => [e.name, e])), i = Uo(game.actors ?? [], game.scenes ?? []);
+	let e = game.packs.get(da);
+	if (!e) throw Error(`The required compendium ${da} is unavailable.`);
+	let t = (await e.getDocuments()).filter(ba), n = new Map(t.map((e) => [xa(e) ?? e.id, e])), r = new Map(t.map((e) => [e.name, e])), i = Ca(game.actors ?? [], game.scenes ?? []);
 	for (let e of i) {
 		let t = [], i = [];
-		for (let a of Array.from(e.items).filter(Bo)) {
-			let e = (Vo(a) ? n.get(Vo(a)) : void 0) ?? (Ho(a) ? r.get(a.name) : void 0);
+		for (let a of Array.from(e.items).filter(ba)) {
+			let e = (xa(a) ? n.get(xa(a)) : void 0) ?? (Sa(a) ? r.get(a.name) : void 0);
 			if (!e) continue;
-			let o = zo(Q(a), Q(e));
+			let o = ya(Z(a), Z(e));
 			o && ("effects" in o && (i.push({
 				owned: a,
 				source: e
@@ -5812,47 +4725,47 @@ async function Go() {
 			}));
 		}
 		t.length > 0 && await e.updateEmbeddedDocuments("Item", t);
-		for (let e of i) await Wo(e.owned, e.source);
+		for (let e of i) await wa(e.owned, e.source);
 		await P(e.uuid);
 	}
 }
 //#endregion
 //#region src/module/wfrp4e/mutants-handbook/replacement.ts
-var Ko = Symbol.for(`${e}.mutantsHandbookReplacement`);
-function qo() {
+var Ea = Symbol.for(`${e}.mutantsHandbookReplacement`);
+function Da() {
 	let e = CONFIG.Actor.dataModels.character.prototype;
-	if (e[Ko] === !0) return;
+	if (e[Ea] === !0) return;
 	let t = e.checkCorruption;
 	if (typeof t != "function") throw Error("WFRP4e's character corruption check is unavailable.");
-	Object.defineProperty(e, Ko, { value: !0 }), e.checkCorruption = async function() {
-		if (!go()) {
+	Object.defineProperty(e, Ea, { value: !0 }), e.checkCorruption = async function() {
+		if (!Ji()) {
 			await t.call(this);
 			return;
 		}
 		try {
-			await lr(this.parent);
+			await Qn(this.parent);
 		} catch (e) {
-			Be(e);
+			b(e);
 		}
 	};
 }
 //#endregion
 //#region src/module/hooks/register-module-hooks.ts
-function Jo() {
+function Oa() {
 	Hooks.once("init", () => {
-		ho(), po(), xo(), ko(), Va();
+		qi(), Gi(), Xi(), Xn(), ua(), bi();
 	}), Hooks.once("ready", async () => {
-		qo();
+		Da();
 		try {
-			await Go();
+			await Ta();
 		} catch (e) {
-			Be(e);
+			b(e);
 		}
 	});
 }
 //#endregion
 //#region src/main.ts
-Jo();
+Oa();
 //#endregion
 
 //# sourceMappingURL=fvtt-wfrp-ratter.mjs.map
