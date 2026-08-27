@@ -167,7 +167,7 @@ function Se(t) {
 				patron: "khorne",
 				sourceDocument: "The Mutant's Handbook"
 			} },
-			img: t.img ?? "systems/wfrp4e/icons/blank.png",
+			img: t.img ?? "modules/fvtt-wfrp-ratter/icons/mutations/mutants-handbook-mutation.png",
 			name: t.name,
 			system: {
 				description: { value: t.description },
