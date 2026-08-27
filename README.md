@@ -29,11 +29,15 @@ Mutant’s Handbook Outcome** option to final action cards, consequential Condit
 healing, timed state, aura and burst resolution actions, extra Bleeding, and deterministic hit
 routing.
 
-Forms, companions, narrative manifestation, concealment, treatment, destructive species replacement,
-and Chaos Spawn conversion remain GM-facing work for Phase 5 or narrative adjudication.
+Phase 5 adds managed forms, explicit reversion, durations, temporary support Items, linked companion
+Actors, Symbiotic Twin Wound synchronization, and Additional Head control Tests. Phase 6 classifies
+every rule clause as automated or mutation-specific GM/player guidance, hardens repeat ownership and
+migration, and uses the same acquisition path for corruption results and manual drag-and-drop on
+character, NPC, and creature Actors. Narrative manifestation, concealment, treatment, destructive
+species replacement, and Chaos Spawn conversion remain deliberate GM adjudication.
 
 Install or update the module with this manifest URL:
 
 ```text
-https://github.com/jeremyglebe/FVTT-WFRP-Ratter-Content/releases/latest/download/module.json
+https://github.com/jeremyglebe/Foundry.Warhammer.Ratter-Implementation/releases/latest/download/module.json
 ```
