@@ -18,8 +18,14 @@ actions for eligible mental mutations. Every Item states exactly what is automat
 checklist for its remaining manual rules. The WFRP4e Core Rulebook content module is required for
 Core grants, and Winds of Magic is recommended for the optional Augury and Psychometry grants.
 
-Choices, subtables, body locations, activated or contextual powers, durations, auras, concealment,
-treatment, and Chaos Spawn conversion remain GM-facing work for later automation phases.
+Phase 2 resolves and retains mutation-specific rolls, subtables, choices, specialisations, body
+sides and hit locations through one reusable dialog. It handles nested draws, repeat progressions,
+unique/capped choices, configured Core grants, and shared upgrades. Blocked results offer Reroll,
+Accept Anyway, or Cancel, and cancelling leaves both the Actor and Corruption unchanged.
+
+Activated or contextual powers, combat hit routing, durations, auras, transformations, companions,
+concealment, treatment, destructive species replacement, and Chaos Spawn conversion remain GM-facing
+work for later automation phases.
 
 Install or update the module with this manifest URL:
 
