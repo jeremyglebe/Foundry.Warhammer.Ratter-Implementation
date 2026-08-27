@@ -23,9 +23,14 @@ sides and hit locations through one reusable dialog. It handles nested draws, re
 unique/capped choices, configured Core grants, and shared upgrades. Blocked results offer Reroll,
 Accept Anyway, or Cancel, and cancelling leaves both the Actor and Corruption unchanged.
 
-Activated or contextual powers, combat hit routing, durations, auras, transformations, companions,
-concealment, treatment, destructive species replacement, and Chaos Spawn conversion remain GM-facing
-work for later automation phases.
+Phase 3 provides owned action Items for attacks and activated powers, native Tests, damage and
+Miscast handling, targeting, use limits, and Advantage costs. Phase 4 adds a reroll-safe **Apply
+Mutant’s Handbook Outcome** option to final action cards, consequential Conditions, follow-up Tests,
+healing, timed state, aura and burst resolution actions, extra Bleeding, and deterministic hit
+routing.
+
+Forms, companions, narrative manifestation, concealment, treatment, destructive species replacement,
+and Chaos Spawn conversion remain GM-facing work for Phase 5 or narrative adjudication.
 
 Install or update the module with this manifest URL:
 
