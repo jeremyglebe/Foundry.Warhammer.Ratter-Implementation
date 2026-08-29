@@ -12,6 +12,7 @@
       "Gained": "{name} loses {loss} Corruption and gains the {mutation} mutation.",
       "KeepMutation": "Keep Mutation",
       "PatronPrompt": "{name} is Chosen by Chaos. Choose the patron whose mutation table they will use from now on.",
+      "PatronConflict": "{name} has more than one Chosen of Chaos Trait. Keep exactly one Chosen of Khorne, Nurgle, Slaanesh, or Tzeentch Trait before rolling another mutation.",
       "PatronRequired": "Choose a Chaos patron for {name} before rolling another mutation.",
       "PatronRestriction": "{patron} restriction for {mutation}: {note}",
       "PatronTitle": "Choose a Chaos Patron",
