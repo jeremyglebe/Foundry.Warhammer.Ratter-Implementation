@@ -1,0 +1,5 @@
+2026/10/22-19:26:41.499898 301013000 Delete type=3 #1
+2026/10/22-19:26:41.506408 16fc6f000 Level-0 table #5: started
+2026/10/22-19:26:41.510053 16fc6f000 Level-0 table #5: 517133 bytes OK
+2026/10/22-19:26:41.510196 16fc6f000 Delete type=0 #3
+2026/10/22-19:26:41.510300 16fc6f000 Manual compaction at level-0 from '!actors!0cc910a7f1c6bb7f' @ 72057594037927935 : 1 .. '!folders!9bd4d40ea80a70c1' @ 0 : 0; will stop at (end)
