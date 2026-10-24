@@ -2,7 +2,7 @@
   "id": "fvtt-wfrp-ratter",
   "title": "Drowsy's WFRP4e Ratter Implementation",
   "description": "A Foundry VTT content module implementing fan-created WFRP material from The Ratter magazine for the WFRP4e system.",
-  "version": "0.1.21",
+  "version": "0.1.22",
   "authors": [
     {
       "name": "jeremyglebe"
@@ -42,123 +42,6 @@
   "styles": [
     "styles/fvtt-wfrp-ratter.css"
   ],
-  "packs": [
-    {
-      "name": "ratter-species",
-      "label": "Ratter Species (Requires Drowsy's WFRP4e Customizers)",
-      "path": "packs/ratter-species",
-      "type": "Item",
-      "system": "wfrp4e"
-    },
-    {
-      "name": "ratter-09-items",
-      "label": "Ratter #9 Items",
-      "path": "packs/ratter-09-items",
-      "type": "Item",
-      "system": "wfrp4e"
-    },
-    {
-      "name": "ratter-09-journals",
-      "label": "Ratter #9 Journals",
-      "path": "packs/ratter-09-journals",
-      "type": "JournalEntry",
-      "system": "wfrp4e"
-    },
-    {
-      "name": "ratter-10-items",
-      "label": "Ratter #10 Items",
-      "path": "packs/ratter-10-items",
-      "type": "Item",
-      "system": "wfrp4e"
-    },
-    {
-      "name": "ratter-10-actors",
-      "label": "Ratter #10 Actors",
-      "path": "packs/ratter-10-actors",
-      "type": "Actor",
-      "system": "wfrp4e"
-    },
-    {
-      "name": "ratter-10-journals",
-      "label": "Ratter #10 Journals",
-      "path": "packs/ratter-10-journals",
-      "type": "JournalEntry",
-      "system": "wfrp4e"
-    },
-    {
-      "name": "ratter-10-tables",
-      "label": "Ratter #10 Roll Tables",
-      "path": "packs/ratter-10-tables",
-      "type": "RollTable",
-      "system": "wfrp4e"
-    },
-    {
-      "name": "ratter-11-items",
-      "label": "Ratter #11 Items",
-      "path": "packs/ratter-11-items",
-      "type": "Item",
-      "system": "wfrp4e"
-    },
-    {
-      "name": "ratter-11-journals",
-      "label": "Ratter #11 Journals",
-      "path": "packs/ratter-11-journals",
-      "type": "JournalEntry",
-      "system": "wfrp4e"
-    },
-    {
-      "name": "ratter-11-tables",
-      "label": "Ratter #11 Roll Tables",
-      "path": "packs/ratter-11-tables",
-      "type": "RollTable",
-      "system": "wfrp4e"
-    }
-  ],
-  "packFolders": [
-    {
-      "name": "Drowsy's WFRP4e Ratter Implementation",
-      "sorting": "m",
-      "color": "#465967",
-      "packs": [
-        "ratter-species"
-      ],
-      "folders": [
-        {
-          "name": "Ratter #9",
-          "sorting": "m",
-          "color": "#465967",
-          "packs": [
-            "ratter-09-items",
-            "ratter-09-journals"
-          ],
-          "folders": []
-        },
-        {
-          "name": "Ratter #10",
-          "sorting": "m",
-          "color": "#465967",
-          "packs": [
-            "ratter-10-items",
-            "ratter-10-actors",
-            "ratter-10-journals",
-            "ratter-10-tables"
-          ],
-          "folders": []
-        },
-        {
-          "name": "Ratter #11",
-          "sorting": "m",
-          "color": "#465967",
-          "packs": [
-            "ratter-11-items",
-            "ratter-11-journals",
-            "ratter-11-tables"
-          ],
-          "folders": []
-        }
-      ]
-    }
-  ],
   "languages": [
     {
       "lang": "en",
@@ -173,7 +56,236 @@
       "color": "#465967"
     }
   },
+  "packs": [
+    {
+      "name": "special-r11-mutants-items",
+      "type": "Item",
+      "system": "wfrp4e",
+      "label": "Items (R11 The Mutant's Handbook)",
+      "path": "packs/special-r11-mutants-items"
+    },
+    {
+      "name": "special-r11-mutants-journals",
+      "type": "JournalEntry",
+      "label": "Journals (R11 The Mutant's Handbook)",
+      "path": "packs/special-r11-mutants-journals"
+    },
+    {
+      "name": "special-r11-mutants-tables",
+      "type": "RollTable",
+      "label": "Roll Tables (R11 The Mutant's Handbook)",
+      "path": "packs/special-r11-mutants-tables"
+    },
+    {
+      "name": "ratter-09-elven-items",
+      "type": "Item",
+      "system": "wfrp4e",
+      "label": "Items (R9 Elven Civilizations)",
+      "path": "packs/ratter-09-elven-items"
+    },
+    {
+      "name": "ratter-09-elven-journals",
+      "type": "JournalEntry",
+      "label": "Journals (R9 Elven Civilizations)",
+      "path": "packs/ratter-09-elven-journals"
+    },
+    {
+      "name": "ratter-09-nations-items",
+      "type": "Item",
+      "system": "wfrp4e",
+      "label": "Items (R9 Nations of Mankind)",
+      "path": "packs/ratter-09-nations-items"
+    },
+    {
+      "name": "ratter-09-nations-journals",
+      "type": "JournalEntry",
+      "label": "Journals (R9 Nations of Mankind)",
+      "path": "packs/ratter-09-nations-journals"
+    },
+    {
+      "name": "ratter-09-ogre-kingdom-journals",
+      "type": "JournalEntry",
+      "label": "Journals (R9 Ogre Kingdom)",
+      "path": "packs/ratter-09-ogre-kingdom-journals"
+    },
+    {
+      "name": "ratter-09-dwarf-empire-journals",
+      "type": "JournalEntry",
+      "label": "Journals (R9 The Dwarf Empire)",
+      "path": "packs/ratter-09-dwarf-empire-journals"
+    },
+    {
+      "name": "ratter-09-under-empire-journals",
+      "type": "JournalEntry",
+      "label": "Journals (R9 Under Empire)",
+      "path": "packs/ratter-09-under-empire-journals"
+    },
+    {
+      "name": "ratter-09-warriors-chaos-journals",
+      "type": "JournalEntry",
+      "label": "Journals (R9 Warriors of Chaos)",
+      "path": "packs/ratter-09-warriors-chaos-journals"
+    },
+    {
+      "name": "ratter-09-warriors-salvation-journals",
+      "type": "JournalEntry",
+      "label": "Journals (R9 Warriors of Salvation)",
+      "path": "packs/ratter-09-warriors-salvation-journals"
+    },
+    {
+      "name": "ratter-10-actors",
+      "type": "Actor",
+      "system": "wfrp4e",
+      "label": "Actors (Ratter #10)",
+      "path": "packs/ratter-10-actors"
+    },
+    {
+      "name": "ratter-10-items",
+      "type": "Item",
+      "system": "wfrp4e",
+      "label": "Items (Ratter #10)",
+      "path": "packs/ratter-10-items"
+    },
+    {
+      "name": "ratter-10-journals",
+      "type": "JournalEntry",
+      "label": "Journals (Ratter #10)",
+      "path": "packs/ratter-10-journals"
+    },
+    {
+      "name": "ratter-10-tables",
+      "type": "RollTable",
+      "label": "Roll Tables (Ratter #10)",
+      "path": "packs/ratter-10-tables"
+    },
+    {
+      "name": "ratter-species",
+      "type": "Item",
+      "system": "wfrp4e",
+      "label": "Species (Ratter #10)",
+      "path": "packs/ratter-species"
+    },
+    {
+      "name": "ratter-09-items",
+      "type": "Item",
+      "system": "wfrp4e",
+      "label": "Items (Ratter #9)",
+      "path": "packs/ratter-09-items"
+    },
+    {
+      "name": "ratter-09-journals",
+      "type": "JournalEntry",
+      "label": "Journals (Ratter #9)",
+      "path": "packs/ratter-09-journals"
+    }
+  ],
+  "packFolders": [
+    {
+      "name": "Drowsy's WFRP4e Ratter Implementation",
+      "sorting": "m",
+      "color": "#465967",
+      "packs": [],
+      "folders": [
+        {
+          "name": "Ratter #9",
+          "sorting": "a",
+          "packs": [
+            "ratter-09-items",
+            "ratter-09-journals"
+          ],
+          "folders": []
+        },
+        {
+          "name": "Ratter #10",
+          "sorting": "a",
+          "packs": [
+            "ratter-10-actors",
+            "ratter-10-items",
+            "ratter-10-journals",
+            "ratter-10-tables",
+            "ratter-species"
+          ],
+          "folders": []
+        },
+        {
+          "name": "R9 Rat Catcher's Guild Homebrews",
+          "sorting": "a",
+          "packs": [],
+          "folders": [
+            {
+              "name": "Elven Civilizations",
+              "sorting": "a",
+              "packs": [
+                "ratter-09-elven-items",
+                "ratter-09-elven-journals"
+              ],
+              "folders": []
+            },
+            {
+              "name": "Nations of Mankind",
+              "sorting": "a",
+              "packs": [
+                "ratter-09-nations-items",
+                "ratter-09-nations-journals"
+              ],
+              "folders": []
+            },
+            {
+              "name": "Ogre Kingdom",
+              "sorting": "a",
+              "packs": [
+                "ratter-09-ogre-kingdom-journals"
+              ],
+              "folders": []
+            },
+            {
+              "name": "The Dwarf Empire",
+              "sorting": "a",
+              "packs": [
+                "ratter-09-dwarf-empire-journals"
+              ],
+              "folders": []
+            },
+            {
+              "name": "Under Empire",
+              "sorting": "a",
+              "packs": [
+                "ratter-09-under-empire-journals"
+              ],
+              "folders": []
+            },
+            {
+              "name": "Warriors of Chaos",
+              "sorting": "a",
+              "packs": [
+                "ratter-09-warriors-chaos-journals"
+              ],
+              "folders": []
+            },
+            {
+              "name": "Warriors of Salvation",
+              "sorting": "a",
+              "packs": [
+                "ratter-09-warriors-salvation-journals"
+              ],
+              "folders": []
+            }
+          ]
+        },
+        {
+          "name": "R11 The Mutant's Handbook",
+          "sorting": "a",
+          "packs": [
+            "special-r11-mutants-items",
+            "special-r11-mutants-journals",
+            "special-r11-mutants-tables"
+          ],
+          "folders": []
+        }
+      ]
+    }
+  ],
   "url": "https://github.com/jeremyglebe/Foundry.Warhammer.Ratter-Implementation",
   "manifest": "https://github.com/jeremyglebe/Foundry.Warhammer.Ratter-Implementation/releases/latest/download/module.json",
-  "download": "https://github.com/jeremyglebe/Foundry.Warhammer.Ratter-Implementation/releases/download/v0.1.21/module.zip"
+  "download": "https://github.com/jeremyglebe/Foundry.Warhammer.Ratter-Implementation/releases/download/v0.1.22/module.zip"
 }

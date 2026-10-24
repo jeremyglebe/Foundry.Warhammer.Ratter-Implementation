@@ -1,9 +1,9 @@
-name: Release Module
+name: Release Foundry Package
 
 on:
   push:
     tags:
-      - 'v*.*.*'
+      - "v*.*.*"
 
 jobs:
   publish:
@@ -16,16 +16,27 @@ jobs:
       - name: Check out public module repository
         uses: actions/checkout@v4
 
-      - name: Validate module files
+      - name: Validate package files
+        id: package
         run: |
-          test -f module.json
+          if test -f module.json && ! test -f system.json; then
+            kind=module
+          elif test -f system.json && ! test -f module.json; then
+            kind=system
+          else
+            echo 'Expected exactly one of module.json or system.json.' >&2
+            exit 1
+          fi
+          echo "kind=$kind" >> "$GITHUB_OUTPUT"
           test -d scripts
           test -d styles
 
-      - name: Create module zip
+      - name: Create package zip
+        env:
+          PACKAGE_KIND: ${{ steps.package.outputs.kind }}
         run: |
-          zip -r module.zip . \
-            -x module.zip \
+          zip -r "$PACKAGE_KIND.zip" . \
+            -x "$PACKAGE_KIND.zip" \
             -x ".git/*" \
             -x ".github/*"
 
@@ -33,7 +44,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            module.json
-            module.zip
+            ${{ steps.package.outputs.kind }}.json
+            ${{ steps.package.outputs.kind }}.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

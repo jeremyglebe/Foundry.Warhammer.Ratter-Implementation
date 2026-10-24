@@ -34,6 +34,10 @@
       "Title": "Drowsy's WFRP4e Ratter Implementation"
     },
     "Settings": {
+      "KeepCompendiumsTidy": {
+        "Hint": "When the active GM opens the world, restore this module's Compendium sidebar folders, issue/special order, and packs to their intended layout. Only differences are changed; other modules' Compendiums are left alone.",
+        "Name": "Keep Drowsy's WFRP4e Ratter Implementation Compendiums Tidy?"
+      },
       "MutantsHandbook": {
         "Hint": "Replaces WFRP4e's standard Dissolution of Body and Mind result with the Ratter #11 Mutant's Handbook procedure when a character exceeds their Corruption threshold.",
         "Name": "Use The Mutant's Handbook mutation rules"
